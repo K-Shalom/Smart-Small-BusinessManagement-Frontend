@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Business | Cashier Clients</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f0f4f8; font-family: Arial, sans-serif; }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 250px; height: 100vh;
+      background: linear-gradient(180deg, #1a7f3f, #28a745);
+      padding: 20px 0; z-index: 100; overflow-y: auto;
+    }
+    .sidebar-brand {
+      text-align: center; padding: 10px 20px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;
+    }
+    .sidebar-brand h5 { color: white; font-weight: 700; margin: 8px 0 4px; font-size: 15px; }
+    .sidebar-brand p { color: rgba(255,255,255,0.6); font-size: 11px; margin: 0; }
+    .nav-link {
+      color: rgba(255,255,255,0.8) !important; padding: 12px 20px;
+      font-size: 14px; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.15); color: white !important; border-left: 3px solid white;
+    }
+    .nav-link i { font-size: 18px; }
+    .main-content { margin-left: 250px; padding: 25px; }
+    .topbar {
+      background: white; border-radius: 12px; padding: 15px 25px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .topbar h4 { margin: 0; color: #1a7f3f; font-weight: 700; }
+    .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .card-header {
+      background: white; border-bottom: 1px solid #f0f0f0;
+      border-radius: 12px 12px 0 0 !important; padding: 18px 25px;
+      font-weight: 700; color: #1a7f3f;
+    }
+    .table th { font-size: 13px; color: #888; font-weight: 600; border: none; background: #f8f9fa; }
+    .table td { font-size: 14px; vertical-align: middle; border-color: #f0f0f0; }
+    .badge-cashier { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    .btn-success { background: #1a7f3f; border-color: #1a7f3f; }
+    .btn-success:hover { background: #28a745; border-color: #28a745; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-shop" style="font-size: 36px; color: white;"></i>
+      <h5>Smart Business</h5>
+      <p>Cashier Panel</p>
+    </div>
+    <nav>
+      <a href="dashboard-cashier.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="cashier-sales.html" class="nav-link"><i class="bi bi-cart3"></i> Record Sale</a>
+      <a href="cashier-expenses.html" class="nav-link"><i class="bi bi-wallet2"></i> Expenses</a>
+      <a href="cashier-clients.html" class="nav-link active"><i class="bi bi-people"></i> Clients</a>
+      <a href="cashier-products.html" class="nav-link"><i class="bi bi-box-seam"></i> View Products</a>
+      <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 20px;">
+      <a href="#" class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <h4><i class="bi bi-people me-2"></i>Clients</h4>
+      <div class="d-flex align-items-center gap-3">
+        <span style="font-size: 14px; color: #555;">
+          <i class="bi bi-person-circle me-1"></i>
+          <span id="cashierName">Cashier</span>
+        </span>
+        <span class="badge-cashier">CASHIER</span>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- Add Client Form -->
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-person-plus me-2"></i>
+            <span id="formTitle">Add Client</span>
+          </div>
+          <div class="card-body">
+            <input type="hidden" id="clientId">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input type="text" id="clientName" class="form-control" placeholder="Enter full name">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Phone Number</label>
+              <input type="text" id="clientPhone" class="form-control" placeholder="Enter phone">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" id="clientEmail" class="form-control" placeholder="Enter email">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Address</label>
+              <input type="text" id="clientAddress" class="form-control" placeholder="Enter address">
+            </div>
+            <div id="formError" class="alert alert-danger d-none"></div>
+            <div id="formSuccess" class="alert alert-success d-none">
+              <i class="bi bi-check-circle me-1"></i>Client saved successfully!
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success w-100" onclick="saveClient()">
+                <i class="bi bi-save me-1"></i>
+                <span id="btnText">Save Client</span>
+              </button>
+              <button class="btn btn-secondary" id="cancelBtn"
+                onclick="resetForm()" style="display:none;">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clients Table -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <i class="bi bi-people me-2"></i>All Clients
+          </div>
+          <div class="card-body p-0">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Full Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTable">
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content" style="border-radius: 12px;">
+        <div class="modal-header bg-danger text-white" style="border-radius: 12px 12px 0 0;">
+          <h5 class="modal-title">Confirm Delete</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <i class="bi bi-exclamation-triangle text-danger" style="font-size: 40px;"></i>
+          <p class="mt-2">Delete this client?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    if (localStorage.getItem('role') !== 'CASHIER') window.location.href = 'dashboard-admin.html';
+
+    document.getElementById('cashierName').textContent = localStorage.getItem('fullName') || 'Cashier';
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    let deleteId = null;
+    let isEdit = false;
+    let deleteModal;
+
+    window.onload = () => {
+      deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      loadClients();
+    };
+
+    async function loadClients() {
+      try {
+        const res = await fetch(`${API_BASE}/api/clients`, { headers });
+        const clients = await res.json();
+        const tbody = document.getElementById('clientsTable');
+
+        if (!Array.isArray(clients) || clients.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No clients found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = clients.map((c, i) => `
+          <tr>
+            <td class="ps-4">${i + 1}</td>
+            <td><strong>${c.fullName}</strong></td>
+            <td>${c.phoneNumber || '-'}</td>
+            <td>${c.email || '-'}</td>
+            <td>${c.address || '-'}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1"
+                onclick="editClient(${JSON.stringify(c).replace(/"/g, '&quot;')})">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger"
+                onclick="openDeleteModal(${c.clientId})">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function editClient(c) {
+      isEdit = true;
+      document.getElementById('clientId').value = c.clientId;
+      document.getElementById('clientName').value = c.fullName;
+      document.getElementById('clientPhone').value = c.phoneNumber || '';
+      document.getElementById('clientEmail').value = c.email || '';
+      document.getElementById('clientAddress').value = c.address || '';
+      document.getElementById('formTitle').textContent = 'Edit Client';
+      document.getElementById('btnText').textContent = 'Update Client';
+      document.getElementById('cancelBtn').style.display = 'inline-block';
+      document.getElementById('formError').classList.add('d-none');
+      document.getElementById('formSuccess').classList.add('d-none');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      isEdit = false;
+      document.getElementById('clientId').value = '';
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientPhone').value = '';
+      document.getElementById('clientEmail').value = '';
+      document.getElementById('clientAddress').value = '';
+      document.getElementById('formTitle').textContent = 'Add Client';
+      document.getElementById('btnText').textContent = 'Save Client';
+      document.getElementById('cancelBtn').style.display = 'none';
+      document.getElementById('formError').classList.add('d-none');
+      document.getElementById('formSuccess').classList.add('d-none');
+    }
+
+    async function saveClient() {
+      const id = document.getElementById('clientId').value;
+      const body = {
+        fullName: document.getElementById('clientName').value.trim(),
+        phoneNumber: document.getElementById('clientPhone').value.trim(),
+        email: document.getElementById('clientEmail').value.trim(),
+        address: document.getElementById('clientAddress').value.trim(),
+      };
+
+      const formError = document.getElementById('formError');
+      const formSuccess = document.getElementById('formSuccess');
+      formError.classList.add('d-none');
+      formSuccess.classList.add('d-none');
+
+      if (!body.fullName) {
+        formError.textContent = 'Full name is required.';
+        formError.classList.remove('d-none');
+        return;
+      }
+
+      try {
+        const url = isEdit
+          ? `${API_BASE}/api/clients/${id}`
+          : `${API_BASE}/api/clients`;
+        const method = isEdit ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
+
+        if (res.ok) {
+          resetForm();
+          formSuccess.classList.remove('d-none');
+          setTimeout(() => formSuccess.classList.add('d-none'), 3000);
+          loadClients();
+        } else {
+          const err = await res.json();
+          formError.textContent = err.message || 'Error saving client.';
+          formError.classList.remove('d-none');
+        }
+      } catch (err) {
+        formError.textContent = 'Cannot connect to server.';
+        formError.classList.remove('d-none');
+      }
+    }
+
+    function openDeleteModal(id) {
+      deleteId = id;
+      deleteModal.show();
+    }
+
+    async function confirmDelete() {
+      try {
+        await fetch(`${API_BASE}/api/clients/${deleteId}`, { method: 'DELETE', headers });
+        deleteModal.hide();
+        loadClients();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

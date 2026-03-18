@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Business | Cashier Sales</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f0f4f8; font-family: Arial, sans-serif; }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 250px; height: 100vh;
+      background: linear-gradient(180deg, #1a7f3f, #28a745);
+      padding: 20px 0; z-index: 100; overflow-y: auto;
+    }
+    .sidebar-brand {
+      text-align: center; padding: 10px 20px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;
+    }
+    .sidebar-brand h5 { color: white; font-weight: 700; margin: 8px 0 4px; font-size: 15px; }
+    .sidebar-brand p { color: rgba(255,255,255,0.6); font-size: 11px; margin: 0; }
+    .nav-link {
+      color: rgba(255,255,255,0.8) !important; padding: 12px 20px;
+      font-size: 14px; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.15); color: white !important; border-left: 3px solid white;
+    }
+    .nav-link i { font-size: 18px; }
+    .main-content { margin-left: 250px; padding: 25px; }
+    .topbar {
+      background: white; border-radius: 12px; padding: 15px 25px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .topbar h4 { margin: 0; color: #1a7f3f; font-weight: 700; }
+    .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .card-header {
+      background: white; border-bottom: 1px solid #f0f0f0;
+      border-radius: 12px 12px 0 0 !important; padding: 18px 25px;
+      font-weight: 700; color: #1a7f3f;
+    }
+    .table th { font-size: 13px; color: #888; font-weight: 600; border: none; background: #f8f9fa; }
+    .table td { font-size: 14px; vertical-align: middle; border-color: #f0f0f0; }
+    .badge-cashier { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    .btn-success { background: #1a7f3f; border-color: #1a7f3f; }
+    .btn-success:hover { background: #28a745; border-color: #28a745; }
+    .item-row { background: #f8f9fa; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .total-box { background: #f8f9fa; border-radius: 10px; padding: 15px 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-shop" style="font-size: 36px; color: white;"></i>
+      <h5>Smart Business</h5>
+      <p>Cashier Panel</p>
+    </div>
+    <nav>
+      <a href="dashboard-cashier.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="cashier-sales.html" class="nav-link active"><i class="bi bi-cart3"></i> Record Sale</a>
+      <a href="cashier-expenses.html" class="nav-link"><i class="bi bi-wallet2"></i> Expenses</a>
+      <a href="cashier-clients.html" class="nav-link"><i class="bi bi-people"></i> Clients</a>
+      <a href="cashier-products.html" class="nav-link"><i class="bi bi-box-seam"></i> View Products</a>
+      <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 20px;">
+      <a href="#" class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <h4><i class="bi bi-cart3 me-2"></i>Record Sale</h4>
+      <div class="d-flex align-items-center gap-3">
+        <span style="font-size: 14px; color: #555;">
+          <i class="bi bi-person-circle me-1"></i>
+          <span id="cashierName">Cashier</span>
+        </span>
+        <span class="badge-cashier">CASHIER</span>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- Record Sale Form -->
+      <div class="col-md-7">
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-cart-plus me-2"></i>New Sale
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Client</label>
+                <select id="saleClient" class="form-select">
+                  <option value="">Select client...</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Payment Method</label>
+                <select id="salePayment" class="form-select">
+                  <option value="CASH">CASH</option>
+                  <option value="MOMO">MOMO</option>
+                  <option value="BANK">BANK</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Discount (RWF)</label>
+              <input type="number" id="saleDiscount" class="form-control" value="0" min="0">
+            </div>
+
+            <!-- Items -->
+            <label class="form-label fw-semibold">Sale Items</label>
+            <div id="saleItems"></div>
+            <button class="btn btn-outline-success btn-sm mt-2" onclick="addItemRow()">
+              <i class="bi bi-plus-circle me-1"></i>Add Item
+            </button>
+
+            <div id="formError" class="alert alert-danger d-none mt-3"></div>
+
+            <div class="mt-3">
+              <button class="btn btn-success w-100 py-2" onclick="saveSale()">
+                <i class="bi bi-save me-2"></i>Record Sale
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Summary -->
+      <div class="col-md-5">
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="bi bi-receipt me-2"></i>Summary
+          </div>
+          <div class="card-body">
+            <div class="total-box">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total Amount:</span>
+                <strong id="totalAmount">RWF 0</strong>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Discount:</span>
+                <strong id="discountDisplay">RWF 0</strong>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between">
+                <span class="fw-bold fs-5">Final Amount:</span>
+                <strong class="text-success fs-5" id="finalAmount">RWF 0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successAlert" class="alert alert-success d-none">
+          <i class="bi bi-check-circle me-2"></i>
+          Sale recorded successfully!
+        </div>
+      </div>
+    </div>
+
+    <!-- My Sales Table -->
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-clock-history me-2"></i>My Sales History
+      </div>
+      <div class="card-body p-0">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">#</th>
+              <th>Invoice No</th>
+              <th>Client</th>
+              <th>Final Amount</th>
+              <th>Payment</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="salesTable">
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                <span class="spinner-border spinner-border-sm me-2"></span>Loading...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    if (localStorage.getItem('role') !== 'CASHIER') window.location.href = 'dashboard-admin.html';
+
+    document.getElementById('cashierName').textContent = localStorage.getItem('fullName') || 'Cashier';
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    let products = [], services = [], clients = [];
+
+    window.onload = async () => {
+      await loadDropdownData();
+      addItemRow();
+      loadSales();
+    };
+
+    async function loadDropdownData() {
+      try {
+        const [p, s, c] = await Promise.all([
+          fetch(`${API_BASE}/api/products`, { headers }).then(r => r.json()),
+          fetch(`${API_BASE}/api/services`, { headers }).then(r => r.json()),
+          fetch(`${API_BASE}/api/clients`, { headers }).then(r => r.json()),
+        ]);
+        products = Array.isArray(p) ? p : [];
+        services = Array.isArray(s) ? s : [];
+        clients = Array.isArray(c) ? c : [];
+
+        const clientSelect = document.getElementById('saleClient');
+        clients.forEach(c => {
+          clientSelect.innerHTML +=
+            `<option value="${c.clientId}">${c.fullName}</option>`;
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadSales() {
+      try {
+        const res = await fetch(`${API_BASE}/api/sales`, { headers });
+        const sales = await res.json();
+        const tbody = document.getElementById('salesTable');
+
+        if (!Array.isArray(sales) || sales.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No sales recorded yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = sales.map((s, i) => `
+          <tr>
+            <td class="ps-4">${i + 1}</td>
+            <td><span class="text-success fw-semibold">${s.invoiceNo || '-'}</span></td>
+            <td>${s.clientName || '-'}</td>
+            <td><strong>RWF ${s.finalAmount?.toLocaleString() || 0}</strong></td>
+            <td><span class="badge bg-success">${s.paymentMethod || '-'}</span></td>
+            <td>${s.saleDate ? new Date(s.saleDate).toLocaleDateString() : '-'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function addItemRow() {
+      const div = document.createElement('div');
+      div.className = 'item-row row g-2 align-items-center';
+      div.innerHTML = `
+        <div class="col-md-3">
+          <select class="form-select form-select-sm item-type" onchange="updateItemRow(this)">
+            <option value="PRODUCT">Product</option>
+            <option value="SERVICE">Service</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select form-select-sm item-select" onchange="updateTotals()">
+            ${products.map(p =>
+              `<option value="${p.productId}" data-price="${p.unitPrice}">
+                ${p.productName} (RWF ${p.unitPrice?.toLocaleString()})
+              </option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="number" class="form-control form-control-sm item-qty"
+            value="1" min="1" onchange="updateTotals()">
+        </div>
+        <div class="col-md-2">
+          <span class="item-subtotal text-success fw-semibold">RWF 0</span>
+        </div>
+        <div class="col-md-1">
+          <button class="btn btn-sm btn-outline-danger"
+            onclick="this.closest('.item-row').remove(); updateTotals()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      `;
+      document.getElementById('saleItems').appendChild(div);
+      updateTotals();
+    }
+
+    function updateItemRow(typeSelect) {
+      const row = typeSelect.closest('.item-row');
+      const itemSelect = row.querySelector('.item-select');
+      const type = typeSelect.value;
+      const items = type === 'PRODUCT' ? products : services;
+      const idField = type === 'PRODUCT' ? 'productId' : 'serviceId';
+      const nameField = type === 'PRODUCT' ? 'productName' : 'serviceName';
+      const priceField = type === 'PRODUCT' ? 'unitPrice' : 'servicePrice';
+      itemSelect.innerHTML = items.map(i =>
+        `<option value="${i[idField]}" data-price="${i[priceField]}">
+          ${i[nameField]} (RWF ${i[priceField]?.toLocaleString()})
+        </option>`
+      ).join('');
+      updateTotals();
+    }
+
+    function updateTotals() {
+      let total = 0;
+      document.querySelectorAll('.item-row').forEach(row => {
+        const select = row.querySelector('.item-select');
+        const qty = parseInt(row.querySelector('.item-qty').value) || 0;
+        const price = parseFloat(select?.selectedOptions[0]?.dataset.price) || 0;
+        const subtotal = price * qty;
+        row.querySelector('.item-subtotal').textContent =
+          `RWF ${subtotal.toLocaleString()}`;
+        total += subtotal;
+      });
+      const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+      const final = total - discount;
+      document.getElementById('totalAmount').textContent =
+        `RWF ${total.toLocaleString()}`;
+      document.getElementById('discountDisplay').textContent =
+        `RWF ${discount.toLocaleString()}`;
+      document.getElementById('finalAmount').textContent =
+        `RWF ${final.toLocaleString()}`;
+    }
+
+    async function saveSale() {
+      const clientId = document.getElementById('saleClient').value;
+      const paymentMethod = document.getElementById('salePayment').value;
+      const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+      const formError = document.getElementById('formError');
+      const successAlert = document.getElementById('successAlert');
+
+      formError.classList.add('d-none');
+      successAlert.classList.add('d-none');
+
+      if (!clientId) {
+        formError.textContent = 'Please select a client.';
+        formError.classList.remove('d-none');
+        return;
+      }
+
+      // Build items array matching SaleDetailRequest
+      const items = [];
+      document.querySelectorAll('.item-row').forEach(row => {
+        const type = row.querySelector('.item-type').value;
+        const select = row.querySelector('.item-select');
+        const qty = parseInt(row.querySelector('.item-qty').value) || 1;
+        const id = parseInt(select.value);
+
+        const detail = { quantity: qty };
+        if (type === 'PRODUCT') detail.productId = id;
+        else detail.serviceId = id;
+        items.push(detail);
+      });
+
+      if (items.length === 0) {
+        formError.textContent = 'Please add at least one item.';
+        formError.classList.remove('d-none');
+        return;
+      }
+
+      // Build body matching SaleRequest exactly
+      const body = {
+        clientId: parseInt(clientId),
+        paymentMethod: paymentMethod,
+        discount: discount,
+        items: items
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/sales`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+          // Reset form
+          document.getElementById('saleClient').value = '';
+          document.getElementById('saleDiscount').value = 0;
+          document.getElementById('saleItems').innerHTML = '';
+          addItemRow();
+          updateTotals();
+          successAlert.classList.remove('d-none');
+          setTimeout(() => successAlert.classList.add('d-none'), 3000);
+          loadSales();
+        } else {
+          const err = await res.json();
+          formError.textContent = err.message || err.error || JSON.stringify(err);
+          formError.classList.remove('d-none');
+        }
+      } catch (err) {
+        formError.textContent = 'Cannot connect to server.';
+        formError.classList.remove('d-none');
+      }
+    }
+
+    document.getElementById('saleDiscount').addEventListener('input', updateTotals);
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

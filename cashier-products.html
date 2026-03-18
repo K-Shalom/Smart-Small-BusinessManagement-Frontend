@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Business | View Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f0f4f8; font-family: Arial, sans-serif; }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 250px; height: 100vh;
+      background: linear-gradient(180deg, #1a7f3f, #28a745);
+      padding: 20px 0; z-index: 100; overflow-y: auto;
+    }
+    .sidebar-brand {
+      text-align: center; padding: 10px 20px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;
+    }
+    .sidebar-brand h5 { color: white; font-weight: 700; margin: 8px 0 4px; font-size: 15px; }
+    .sidebar-brand p { color: rgba(255,255,255,0.6); font-size: 11px; margin: 0; }
+    .nav-link {
+      color: rgba(255,255,255,0.8) !important; padding: 12px 20px;
+      font-size: 14px; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.15); color: white !important; border-left: 3px solid white;
+    }
+    .nav-link i { font-size: 18px; }
+    .main-content { margin-left: 250px; padding: 25px; }
+    .topbar {
+      background: white; border-radius: 12px; padding: 15px 25px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .topbar h4 { margin: 0; color: #1a7f3f; font-weight: 700; }
+    .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .card-header {
+      background: white; border-bottom: 1px solid #f0f0f0;
+      border-radius: 12px 12px 0 0 !important; padding: 18px 25px;
+      font-weight: 700; color: #1a7f3f;
+    }
+    .table th { font-size: 13px; color: #888; font-weight: 600; border: none; background: #f8f9fa; }
+    .table td { font-size: 14px; vertical-align: middle; border-color: #f0f0f0; }
+    .badge-cashier { background: #28a745; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    .stock-low { color: #dc3545; font-weight: 600; }
+    .stock-ok { color: #28a745; font-weight: 600; }
+    .product-card {
+      background: white; border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+      border-left: 4px solid #28a745;
+    }
+    .product-card h6 { color: #1a7f3f; font-weight: 700; margin-bottom: 5px; }
+    .product-card p { color: #888; font-size: 13px; margin: 0; }
+    .search-bar {
+      background: white; border-radius: 12px; padding: 15px 20px;
+      margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-shop" style="font-size: 36px; color: white;"></i>
+      <h5>Smart Business</h5>
+      <p>Cashier Panel</p>
+    </div>
+    <nav>
+      <a href="dashboard-cashier.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="cashier-sales.html" class="nav-link"><i class="bi bi-cart3"></i> Record Sale</a>
+      <a href="cashier-expenses.html" class="nav-link"><i class="bi bi-wallet2"></i> Expenses</a>
+      <a href="cashier-clients.html" class="nav-link"><i class="bi bi-people"></i> Clients</a>
+      <a href="cashier-products.html" class="nav-link active"><i class="bi bi-box-seam"></i> View Products</a>
+      <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 20px;">
+      <a href="#" class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-left"></i> Logout</a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <h4><i class="bi bi-box-seam me-2"></i>View Products</h4>
+      <div class="d-flex align-items-center gap-3">
+        <span style="font-size: 14px; color: #555;">
+          <i class="bi bi-person-circle me-1"></i>
+          <span id="cashierName">Cashier</span>
+        </span>
+        <span class="badge-cashier">CASHIER</span>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control border-start-0"
+              placeholder="Search products or services..."
+              onkeyup="filterItems()">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select id="filterType" class="form-select" onchange="filterItems()">
+            <option value="ALL">All Items</option>
+            <option value="PRODUCT">Products Only</option>
+            <option value="SERVICE">Services Only</option>
+          </select>
+        </div>
+        <div class="col-md-3 text-end">
+          <span class="text-muted" style="font-size: 13px;">
+            Total: <strong id="totalItems">0</strong> items
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="itemTabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#" onclick="switchTab('products', this)">
+          <i class="bi bi-box-seam me-1"></i>Products
+          <span class="badge bg-success ms-1" id="productCount">0</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="switchTab('services', this)">
+          <i class="bi bi-gear me-1"></i>Services
+          <span class="badge bg-success ms-1" id="serviceCount">0</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Products Table -->
+    <div id="productsTab">
+      <div class="card">
+        <div class="card-header">
+          <i class="bi bi-box-seam me-2"></i>All Products
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th class="ps-4">#</th>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Unit Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="productsTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  <span class="spinner-border spinner-border-sm me-2"></span>Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Table -->
+    <div id="servicesTab" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <i class="bi bi-gear me-2"></i>All Services
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th class="ps-4">#</th>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="servicesTable">
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">
+                  <span class="spinner-border spinner-border-sm me-2"></span>Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    if (localStorage.getItem('role') !== 'CASHIER') window.location.href = 'dashboard-admin.html';
+
+    document.getElementById('cashierName').textContent = localStorage.getItem('fullName') || 'Cashier';
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    let allProducts = [];
+    let allServices = [];
+
+    window.onload = async () => {
+      await loadProducts();
+      await loadServices();
+    };
+
+    async function loadProducts() {
+      try {
+        const res = await fetch(`${API_BASE}/api/products`, { headers });
+        const products = await res.json();
+        allProducts = Array.isArray(products) ? products : [];
+
+        document.getElementById('productCount').textContent = allProducts.length;
+        document.getElementById('totalItems').textContent = allProducts.length + allServices.length;
+
+        renderProducts(allProducts);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadServices() {
+      try {
+        const res = await fetch(`${API_BASE}/api/services`, { headers });
+        const services = await res.json();
+        allServices = Array.isArray(services) ? services : [];
+
+        document.getElementById('serviceCount').textContent = allServices.length;
+        document.getElementById('totalItems').textContent = allProducts.length + allServices.length;
+
+        renderServices(allServices);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderProducts(products) {
+      const tbody = document.getElementById('productsTable');
+      if (products.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No products found.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = products.map((p, i) => `
+        <tr>
+          <td class="ps-4">${i + 1}</td>
+          <td><strong>${p.productName}</strong></td>
+          <td>${p.description || '-'}</td>
+          <td><span class="text-success fw-semibold">RWF ${p.unitPrice?.toLocaleString()}</span></td>
+          <td class="${p.stockQuantity <= 5 ? 'stock-low' : 'stock-ok'}">
+            ${p.stockQuantity}
+            ${p.stockQuantity <= 5 ? '<i class="bi bi-exclamation-triangle ms-1"></i>' : ''}
+          </td>
+          <td>
+            ${p.stockQuantity > 0
+              ? '<span class="badge bg-success">In Stock</span>'
+              : '<span class="badge bg-danger">Out of Stock</span>'
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderServices(services) {
+      const tbody = document.getElementById('servicesTable');
+      if (services.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No services found.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = services.map((s, i) => `
+        <tr>
+          <td class="ps-4">${i + 1}</td>
+          <td><strong>${s.serviceName}</strong></td>
+          <td>${s.description || '-'}</td>
+          <td><span class="text-success fw-semibold">RWF ${s.servicePrice?.toLocaleString()}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function switchTab(tab, el) {
+      event.preventDefault();
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+      if (tab === 'products') {
+        document.getElementById('productsTab').style.display = 'block';
+        document.getElementById('servicesTab').style.display = 'none';
+      } else {
+        document.getElementById('productsTab').style.display = 'none';
+        document.getElementById('servicesTab').style.display = 'block';
+      }
+    }
+
+    function filterItems() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const type = document.getElementById('filterType').value;
+
+      if (type === 'SERVICE') {
+        document.getElementById('productsTab').style.display = 'none';
+        document.getElementById('servicesTab').style.display = 'block';
+        const filtered = allServices.filter(s =>
+          s.serviceName.toLowerCase().includes(search)
+        );
+        renderServices(filtered);
+      } else if (type === 'PRODUCT') {
+        document.getElementById('productsTab').style.display = 'block';
+        document.getElementById('servicesTab').style.display = 'none';
+        const filtered = allProducts.filter(p =>
+          p.productName.toLowerCase().includes(search)
+        );
+        renderProducts(filtered);
+      } else {
+        document.getElementById('productsTab').style.display = 'block';
+        document.getElementById('servicesTab').style.display = 'none';
+        const filtered = allProducts.filter(p =>
+          p.productName.toLowerCase().includes(search)
+        );
+        renderProducts(filtered);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

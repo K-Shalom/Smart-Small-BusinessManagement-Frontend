@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Business | Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1F4E79, #2E75B6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-logo h2 {
+      color: #1F4E79;
+      font-weight: 700;
+      font-size: 22px;
+    }
+    .login-logo p {
+      color: #888;
+      font-size: 14px;
+    }
+    .form-control:focus {
+      border-color: #2E75B6;
+      box-shadow: 0 0 0 0.2rem rgba(46,117,182,0.25);
+    }
+    .btn-login {
+      background: linear-gradient(135deg, #1F4E79, #2E75B6);
+      border: none;
+      color: white;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, #2E75B6, #1F4E79);
+      color: white;
+    }
+    .input-group-text {
+      background: #f8f9fa;
+      border-right: none;
+    }
+    .form-control {
+      border-left: none;
+    }
+    .alert {
+      font-size: 14px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">
+      <i class="bi bi-shop" style="font-size: 48px; color: #1F4E79;"></i>
+      <h2>Smart Business</h2>
+      <p>Management Web Application</p>
+    </div>
+
+    <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span id="errorMessage">Invalid username or password.</span>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Username</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input type="text" id="username" class="form-control" placeholder="Enter username">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Password</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+        <input type="password" id="password" class="form-control" placeholder="Enter password">
+      </div>
+    </div>
+
+    <button class="btn btn-login" onclick="login()">
+      <span id="btnText">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+      </span>
+      <span id="btnLoading" class="d-none">
+        <span class="spinner-border spinner-border-sm me-2"></span>Logging in...
+      </span>
+    </button>
+
+    <p class="text-center text-muted mt-4 mb-0" style="font-size: 13px;">
+      Karongi College &mdash; Rwanda Polytechnic
+    </p>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8080';
+
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorAlert = document.getElementById('errorAlert');
+      const errorMessage = document.getElementById('errorMessage');
+      const btnText = document.getElementById('btnText');
+      const btnLoading = document.getElementById('btnLoading');
+
+      errorAlert.classList.add('d-none');
+
+      if (!username || !password) {
+        errorMessage.textContent = 'Please enter username and password.';
+        errorAlert.classList.remove('d-none');
+        return;
+      }
+
+      btnText.classList.add('d-none');
+      btnLoading.classList.remove('d-none');
+
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Save token and user info
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('fullName', data.fullName);
+          localStorage.setItem('username', data.username);
+          localStorage.setItem('role', data.role);
+
+          // Redirect based on role
+          if (data.role === 'ADMIN') {
+            window.location.href = 'dashboard-admin.html';
+          } else {
+            window.location.href = 'dashboard-cashier.html';
+          }
+        } else {
+          errorMessage.textContent = data.message || 'Invalid username or password.';
+          errorAlert.classList.remove('d-none');
+        }
+      } catch (error) {
+        errorMessage.textContent = 'Cannot connect to server. Make sure the backend is running.';
+        errorAlert.classList.remove('d-none');
+      } finally {
+        btnText.classList.remove('d-none');
+        btnLoading.classList.add('d-none');
+      }
+    }
+
+    // Allow Enter key to login
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') login();
+    });
+
+    // Redirect if already logged in
+    if (localStorage.getItem('token')) {
+      const role = localStorage.getItem('role');
+      if (role === 'ADMIN') window.location.href = 'dashboard-admin.html';
+      else window.location.href = 'dashboard-cashier.html';
+    }
+  </script>
+</body>
+</html>
