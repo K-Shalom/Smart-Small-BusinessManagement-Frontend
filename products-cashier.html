@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products — SmartBiz Cashier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0f1e; --sidebar: #0d1528; --card: #111827; --card2: #161f35;
+            --accent: #34d399; --accent2: #059669; --gold: #f0a500;
+            --text: #f0eee8; --muted: #7a8599; --border: rgba(255,255,255,0.06);
+            --success: #34d399; --danger: #ff5a5a; --warning: #fbbf24; --info: #60a5fa;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+        .sidebar { width: 240px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+        .sidebar-brand { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: contain; }
+        .sidebar-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+        .sidebar-brand-name span { color: var(--accent); }
+        .sidebar-role { margin: 1rem 1rem 0.5rem; padding: 0.5rem 0.75rem; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: 8px; font-size: 0.75rem; color: var(--accent); text-align: center; letter-spacing: 0.08em; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; }
+        .nav-section { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.5rem; font-size: 0.88rem; color: rgba(240,238,232,0.65); border-left: 3px solid transparent; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); border-left-color: rgba(52,211,153,0.3); }
+        .nav-item.active { background: rgba(52,211,153,0.08); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+        .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+        .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; background: rgba(255,90,90,0.08); border: 1px solid rgba(255,90,90,0.2); border-radius: 8px; color: var(--danger); font-size: 0.875rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(255,90,90,0.15); }
+
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+        .topbar-left p { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+        .topbar-right { display: flex; align-items: center; gap: 1rem; }
+        .topbar-day { font-size: 0.72rem; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: 500; }
+        .topbar-date { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 20px; }
+        .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #fff; }
+
+        .content { padding: 2rem; flex: 1; }
+        .page-header { margin-bottom: 1.75rem; }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+        .page-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); border-radius: 10px; padding: 0.85rem 1.1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--info); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+        .mini-stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; animation: fadeUp 0.4s ease both; }
+        .mini-stat:nth-child(1) { animation-delay: 0.05s; }
+        .mini-stat:nth-child(2) { animation-delay: 0.1s; }
+        .mini-stat:nth-child(3) { animation-delay: 0.15s; }
+        .mini-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .mini-icon.green   { background: rgba(52,211,153,0.12); }
+        .mini-icon.warning { background: rgba(251,191,36,0.12); }
+        .mini-icon.red     { background: rgba(255,90,90,0.12); }
+        .mini-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; line-height: 1; }
+        .mini-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .toolbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .search-box { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+        .search-box input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; padding: 0.65rem 1rem 0.65rem 2.5rem; outline: none; transition: border-color 0.2s; }
+        .search-box input:focus { border-color: rgba(52,211,153,0.4); }
+        .search-box input::placeholder { color: var(--muted); }
+        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+        .filter-select { background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; padding: 0.65rem 1rem; outline: none; cursor: pointer; }
+        .filter-select option { background: #1e2a42; }
+        .results-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; animation: fadeUp 0.5s ease 0.2s both; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--card2); white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { padding: 0.9rem 1.25rem; font-size: 0.875rem; white-space: nowrap; }
+
+        .product-name { font-weight: 500; color: var(--text); }
+        .product-desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .stock-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+        .stock-ok  { background: rgba(52,211,153,0.12); color: var(--success); }
+        .stock-low { background: rgba(251,191,36,0.12);  color: var(--warning); }
+        .stock-out { background: rgba(255,90,90,0.12);   color: var(--danger); }
+
+        .empty-state { text-align: center; padding: 4rem 1rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-text { color: var(--muted); font-size: 0.9rem; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .content { padding: 1rem; } .stats-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img src="logo.png" alt="SmartBiz">
+        <div class="sidebar-brand-name">Smart<span>Biz</span></div>
+    </div>
+    <div class="sidebar-role">🧾 Cashier Panel</div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a class="nav-item" href="dashboard-cashier.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a class="nav-item" href="clients-cashier.html"><span class="nav-icon">👥</span> Clients</a>
+        <a class="nav-item active" href="products-cashier.html"><span class="nav-icon">📦</span> Products</a>
+        <div class="nav-section">Transactions</div>
+        <a class="nav-item" href="sales-cashier.html"><span class="nav-icon">🧾</span> New Sale</a>
+        <a class="nav-item" href="my-sales-cashier.html"><span class="nav-icon">📋</span> My Sales</a>
+        <a class="nav-item" href="expenses-cashier.html"><span class="nav-icon">💸</span> Expenses</a>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+            <h1>Products</h1>
+            <p>View product inventory</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-day" id="currentDay"></div>
+            <div class="topbar-date">📅 <span id="currentDate"></span></div>
+            <div class="topbar-avatar" id="avatarInitial">C</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="page-header">
+            <div class="page-title">Product Inventory</div>
+            <div class="page-subtitle">View available products and stock levels</div>
+        </div>
+
+        <div class="notice">
+            ℹ️ You can view products only. Contact Admin to add or edit products.
+        </div>
+
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-icon green">📦</div>
+                <div><div class="mini-value" id="statTotal">0</div><div class="mini-label">Total Products</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon warning">⚠</div>
+                <div><div class="mini-value" id="statLow">0</div><div class="mini-label">Low Stock</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon red">🚫</div>
+                <div><div class="mini-value" id="statOut">0</div><div class="mini-label">Out of Stock</div></div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+            </div>
+            <select class="filter-select" id="stockFilter" onchange="filterProducts()">
+                <option value="all">All Stock</option>
+                <option value="ok">In Stock</option>
+                <option value="low">Low Stock</option>
+                <option value="out">Out of Stock</option>
+            </select>
+            <span class="results-count" id="resultsCount"></span>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Min Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--muted);">Loading products...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const API_URL  = "http://localhost:8080";
+    const token    = localStorage.getItem("token");
+    const role     = localStorage.getItem("role");
+    const fullName = localStorage.getItem("fullName") || "Cashier";
+
+    if (!token || role !== "CASHIER") window.location.href = "login.html";
+
+    const now  = new Date();
+    const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    document.getElementById("currentDay").textContent  = DAYS[now.getDay()];
+    document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
+    document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
+
+    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    let allProducts = [];
+
+    async function loadProducts() {
+        try {
+            const res = await fetch(`${API_URL}/api/products`, { headers });
+            if (!res.ok) throw new Error();
+            allProducts = await res.json();
+            renderTable(allProducts);
+            updateStats(allProducts);
+        } catch {
+            document.getElementById("tableBody").innerHTML =
+                `<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--danger);">Failed to load products.</td></tr>`;
+        }
+    }
+
+    function renderTable(products) {
+        const tbody = document.getElementById("tableBody");
+        document.getElementById("resultsCount").textContent = `${products.length} product(s)`;
+        if (products.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">No products found.</div></div></td></tr>`;
+            return;
+        }
+        tbody.innerHTML = products.map((p, i) => {
+            const qty  = p.stockQuantity ?? 0;
+            const min  = p.minimumStock ?? 5;
+            let cls, lbl;
+            if (qty === 0)       { cls = "stock-out"; lbl = "Out of Stock"; }
+            else if (qty <= min) { cls = "stock-low"; lbl = "Low Stock"; }
+            else                 { cls = "stock-ok";  lbl = "In Stock"; }
+            return `<tr>
+                <td style="color:var(--muted);">${i+1}</td>
+                <td>
+                    <div class="product-name">${p.productName ?? p.name ?? "—"}</div>
+                    <div class="product-desc">${p.description || "—"}</div>
+                </td>
+                <td style="color:var(--gold);font-weight:500;">RWF ${Number(p.price ?? p.unitPrice ?? 0).toLocaleString()}</td>
+                <td><strong style="color:${qty===0?"var(--danger)":qty<=min?"var(--warning)":"var(--text)"}">${qty}</strong></td>
+                <td style="color:var(--muted);">${min}</td>
+                <td><span class="stock-badge ${cls}">${lbl}</span></td>
+            </tr>`;
+        }).join("");
+    }
+
+    function updateStats(products) {
+        document.getElementById("statTotal").textContent = products.length;
+        document.getElementById("statLow").textContent   = products.filter(p => { const q=p.stockQuantity??0; const m=p.minimumStock??5; return q>0&&q<=m; }).length;
+        document.getElementById("statOut").textContent   = products.filter(p => (p.stockQuantity??0)===0).length;
+    }
+
+    function filterProducts() {
+        const s   = document.getElementById("searchInput").value.toLowerCase();
+        const fil = document.getElementById("stockFilter").value;
+        let filtered = allProducts.filter(p => (p.productName??p.name??"").toLowerCase().includes(s) || (p.description??"").toLowerCase().includes(s));
+        if (fil !== "all") {
+            filtered = filtered.filter(p => {
+                const q = p.stockQuantity??0; const m = p.minimumStock??5;
+                if (fil==="ok")  return q>m;
+                if (fil==="low") return q>0&&q<=m;
+                if (fil==="out") return q===0;
+            });
+        }
+        renderTable(filtered);
+    }
+
+    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    loadProducts();
+</script>
+    <script src="responsive.js"></script>
+</body>
+</html>

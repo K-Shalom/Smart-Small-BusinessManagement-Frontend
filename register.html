@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — SmartBiz</title>
+    <title>Register — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,7 +20,12 @@
             --error: #ff5a5a;
             --success: #34d399;
         }
-
+a{
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity 0.2s;
+            font-size: 11px;
+        }
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--bg);
@@ -38,15 +43,11 @@
             flex-direction: column;
             padding: 3rem;
         }
-        a{
-            color: var(--accent);
-            text-decoration: none;
-            transition: opacity 0.2s;
-            font-size: 11px;
-        }
+
         .left-panel::before {
             content: '';
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background:
                 radial-gradient(ellipse at 20% 20%, rgba(240,165,0,0.18) 0%, transparent 60%),
                 radial-gradient(ellipse at 80% 80%, rgba(224,92,42,0.15) 0%, transparent 60%),
@@ -55,7 +56,9 @@
         }
 
         .left-panel::after {
-            content: ''; position: absolute; inset: 0;
+            content: '';
+            position: absolute;
+            inset: 0;
             background-image:
                 repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.02) 59px, rgba(255,255,255,0.02) 60px),
                 repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.02) 59px, rgba(255,255,255,0.02) 60px);
@@ -72,10 +75,13 @@
         .hero-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 0; }
 
         .hero-tag {
-            display: inline-block; font-size: 0.7rem; font-weight: 500;
+            display: inline-block;
+            font-size: 0.7rem; font-weight: 500;
             letter-spacing: 0.18em; text-transform: uppercase;
-            color: var(--accent); border: 1px solid rgba(240,165,0,0.3);
-            padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1.5rem;
+            color: var(--accent);
+            border: 1px solid rgba(240,165,0,0.3);
+            padding: 0.3rem 0.8rem; border-radius: 20px;
+            margin-bottom: 1.5rem;
             opacity: 0; animation: fadeIn 0.4s ease 0.2s both;
         }
 
@@ -88,9 +94,9 @@
         }
 
         .typed-line { display: block; overflow: hidden; white-space: nowrap; width: 0; }
-        .typed-line.line1 { animation: typing 0.5s steps(10) 0.6s both; }
-        .typed-line.line2 { animation: typing 0.7s steps(14) 1.2s both; }
-        .typed-line.line3 { animation: typing 0.6s steps(12) 2.0s both; }
+        .typed-line.line1 { animation: typing 0.6s steps(12) 0.6s both; }
+        .typed-line.line2 { animation: typing 0.9s steps(18) 1.3s both; }
+        .typed-line.line3 { animation: typing 0.6s steps(12) 2.3s both; }
 
         @keyframes typing { from { width: 0; } to { width: 100%; } }
 
@@ -111,15 +117,9 @@
 
         .hero-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 340px; }
 
-        .stats-row { display: flex; gap: 2rem; margin-top: 2.5rem; }
-        .stat { display: flex; flex-direction: column; gap: 0.2rem; }
-        .stat-number {
-            font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
-        .stat-divider { width: 1px; background: rgba(255,255,255,0.08); align-self: stretch; }
+        .features { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; }
+        .feature-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; color: rgba(240,238,232,0.7); }
+        .feature-dot { width: 6px; height: 6px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); flex-shrink: 0; }
 
         .left-footer { font-size: 0.75rem; color: var(--muted); margin-top: auto; padding-top: 2rem; }
 
@@ -135,33 +135,12 @@
             pointer-events: none;
         }
 
-        .right-panel::after {
-            content: ''; position: absolute; bottom: -80px; left: -80px;
-            width: 250px; height: 250px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(224,92,42,0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .form-card { width: 100%; max-width: 400px; animation: fadeUp 0.7s ease both; }
+        .form-card { width: 100%; max-width: 420px; animation: fadeUp 0.7s ease both; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
-        .welcome-badge {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(240,165,0,0.08); border: 1px solid rgba(240,165,0,0.2);
-            border-radius: 20px; padding: 0.35rem 0.9rem;
-            font-size: 0.78rem; color: var(--accent); margin-bottom: 1.25rem;
-        }
-
-        .welcome-dot {
-            width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-            animation: pulse 2s ease infinite;
-        }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
-
-        .form-header { margin-bottom: 2rem; }
-        .form-header h2 { font-family: 'Playfair Display', serif; font-size: 1.85rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .form-header { margin-bottom: 1.5rem; }
+        .form-header h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.4rem; }
 
         .alert {
             padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.85rem;
@@ -171,12 +150,12 @@
         .alert-error { background: rgba(255,90,90,0.1); border: 1px solid rgba(255,90,90,0.25); color: var(--error); }
         .alert-success { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: var(--success); }
 
-        .input-group { margin-bottom: 1.1rem; }
+        .input-group { margin-bottom: 1rem; }
 
         .input-group label {
             display: block; font-size: 0.78rem; font-weight: 500;
             letter-spacing: 0.06em; text-transform: uppercase;
-            color: var(--muted); margin-bottom: 0.5rem;
+            color: var(--muted); margin-bottom: 0.45rem;
         }
 
         .input-wrapper { display: flex; align-items: center; position: relative; }
@@ -186,21 +165,30 @@
             font-size: 1rem; pointer-events: none; z-index: 1;
         }
 
-        .input-wrapper input {
-            width: 100%; background: var(--input-bg);
-            border: 1px solid var(--input-border); border-radius: 10px;
-            color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
-            padding: 0.75rem 0.9rem 0.75rem 2.6rem; outline: none;
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px; color: var(--text);
+            font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+            padding: 0.72rem 0.9rem 0.72rem 2.6rem;
+            outline: none; appearance: none;
             transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         .input-wrapper input::placeholder { color: rgba(122,133,153,0.6); }
 
-        .input-wrapper input:focus {
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
             border-color: rgba(240,165,0,0.5);
             box-shadow: 0 0 0 3px rgba(240,165,0,0.08);
             background: rgba(255,255,255,0.06);
         }
+
+        .input-wrapper select option { background: #1e2a42; color: var(--text); }
+
+        .select-arrow { position: absolute; right: 0.9rem; pointer-events: none; color: var(--muted); font-size: 0.75rem; z-index: 2; }
 
         .pw-toggle {
             position: absolute; right: 0.9rem; background: none; border: none;
@@ -209,20 +197,14 @@
         }
         .pw-toggle:hover { color: var(--accent); }
 
-        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.4rem; }
-
-        .remember-me { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
-        .remember-me input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
-
-        .forgot-link { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
-        .forgot-link:hover { opacity: 0.75; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
         .btn-submit {
             width: 100%; padding: 0.85rem; border: none; border-radius: 10px;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
             color: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
             font-weight: 600; letter-spacing: 0.03em; cursor: pointer;
-            position: relative; overflow: hidden;
+            margin-top: 0.5rem; position: relative; overflow: hidden;
             transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
             box-shadow: 0 4px 20px rgba(240,165,0,0.25);
         }
@@ -241,21 +223,13 @@
         .btn-submit.loading .btn-text { display: none; }
         .btn-submit.loading .spinner { display: block; }
 
-        .role-hint { display: flex; gap: 0.5rem; margin-top: 1.5rem; justify-content: center; }
-        .role-pill {
-            display: flex; align-items: center; gap: 0.35rem;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px; padding: 0.3rem 0.75rem; font-size: 0.75rem; color: var(--muted);
-        }
-        .role-dot { width: 5px; height: 5px; border-radius: 50%; }
-        .role-dot.admin { background: var(--accent); }
-        .role-dot.cashier { background: #34d399; }
-
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: auto; }
             .left-panel { width: 100%; padding: 2rem; }
-            .stats-row { display: none; }
+            .hero-content { padding: 1rem 0; }
+            .features { display: none; }
             .right-panel { padding: 2rem 1.25rem 3rem; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -268,47 +242,31 @@
     </div>
 
     <div class="hero-content">
-        <div class="hero-tag">Welcome Back</div>
+        <div class="hero-tag">Business Management</div>
         <h1 class="hero-title">
-            <span class="typed-line line1">Your business,</span>
-            <span class="typed-line line2"><em>always</em> in control.</span>
-            <span class="typed-line line3">Sign in below.</span>
+            <span class="typed-line line1">Manage your</span>
+            <span class="typed-line line2">business <em>smarter,</em></span>
+            <span class="typed-line line3">not harder.</span>
         </h1>
         <p class="hero-desc">
-            Access your dashboard, track sales, manage inventory and monitor your business performance in real time.
+            Track sales, expenses, clients, and inventory — all in one powerful platform built for small businesses.
         </p>
-        <div class="stats-row">
-            <div class="stat">
-                <span class="stat-number">2</span>
-                <span class="stat-label">User roles</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">Secure JWT</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat">
-                <span class="stat-number">∞</span>
-                <span class="stat-label">Transactions</span>
-            </div>
+        <div class="features">
+            <div class="feature-item"><div class="feature-dot"></div> Real-time sales & profit tracking</div>
+            <div class="feature-item"><div class="feature-dot"></div> Role-based access control</div>
+            <div class="feature-item"><div class="feature-dot"></div> Secure User authentication</div>
         </div>
     </div>
 
-    <div class="left-footer">© 2026 SmartBiz · Rwanda Polytechnic <a href="https://github.com/K-Shalom"  target="_blank">Shalom K</a></div>
+    <div class="left-footer">© 2026 SmartBiz · Rwanda Polytechnic <a href="https://github.com/K-Shalom" target="_blank">Shalom K</a></div>
 </div>
 
 <div class="right-panel">
     <div class="form-card">
 
-        <div class="welcome-badge">
-            <div class="welcome-dot"></div>
-            System online
-        </div>
-
         <div class="form-header">
-            <h2>Sign In</h2>
-            <p style="font-size:0.875rem; color:var(--muted);">Enter your credentials to access your dashboard</p>
+            <h2>Create Account</h2>
+            <p style="color:var(--muted); font-size:0.875rem;">Fill in your details to get started</p>
         </div>
 
         <div class="alert alert-error" id="errorAlert">
@@ -318,12 +276,40 @@
             <span>✓</span><span id="successText"></span>
         </div>
 
-        <!-- identifier = username or email -->
         <div class="input-group">
-            <label>Username or Email</label>
+            <label>Full Name</label>
             <div class="input-wrapper">
                 <span class="icon">👤</span>
-                <input type="text" id="identifier" placeholder="Enter username or email" autocomplete="off">
+                <input type="text" id="fullName" placeholder="e.g. Shalom Kubwimbabazi" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="input-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <span class="icon">🏷</span>
+                    <input type="text" id="username" placeholder="Choose username" autocomplete="off">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Role</label>
+                <div class="input-wrapper">
+                    <span class="icon">🔑</span>
+                    <select id="role">
+                        <option value="ADMIN">Admin</option>
+                        <option value="CASHIER">Cashier</option>
+                    </select>
+                    <span class="select-arrow">▾</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Email Address</label>
+            <div class="input-wrapper">
+                <span class="icon">✉</span>
+                <input type="email" id="email" placeholder="you@example.com" autocomplete="off">
             </div>
         </div>
 
@@ -331,32 +317,20 @@
             <label>Password</label>
             <div class="input-wrapper">
                 <span class="icon">🔒</span>
-                <input type="password" id="password" placeholder="Enter your password">
+                <input type="password" id="password" placeholder="Min. 8 characters">
                 <button class="pw-toggle" type="button" onclick="togglePassword()">👁</button>
             </div>
         </div>
 
-        <div class="form-options">
-            <label class="remember-me">
-                <input type="checkbox" id="remember"> Remember me
-            </label>
-            <a href="#" class="forgot-link">Forgot password?</a>
-        </div>
-
-        <button class="btn-submit" id="submitBtn" onclick="login()">
-            <span class="btn-text">Sign In →</span>
+        <button class="btn-submit" id="submitBtn" onclick="register()">
+            <span class="btn-text">Create Account</span>
             <div class="spinner"></div>
         </button>
 
         <p style="text-align:center; margin-top:1.2rem; font-size:0.875rem; color:var(--muted);">
-            Don't have an account?
-            <a href="register.html" style="color:var(--accent); text-decoration:none; font-weight:500;">Create one →</a>
+            Already have an account?
+            <a href="login.html" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in →</a>
         </p>
-
-        <div class="role-hint">
-            <div class="role-pill"><div class="role-dot admin"></div> Admin</div>
-            <div class="role-pill"><div class="role-dot cashier"></div> Cashier</div>
-        </div>
 
     </div>
 </div>
@@ -381,15 +355,23 @@
         pw.type = pw.type === "password" ? "text" : "password";
     }
 
-    async function login() {
-        const identifier = document.getElementById("identifier").value.trim();
-        const password   = document.getElementById("password").value;
+    async function register() {
+        const fullName = document.getElementById("fullName").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const email    = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const role     = document.getElementById("role").value;
 
         document.getElementById("errorAlert").classList.remove("show");
         document.getElementById("successAlert").classList.remove("show");
 
-        if (!identifier || !password) {
-            showError("Please fill in all fields.");
+        if (!fullName || !username || !email || !password) {
+            showError("Please fill in all required fields.");
+            return;
+        }
+
+        if (password.length < 8) {
+            showError("Password must be at least 8 characters.");
             return;
         }
 
@@ -398,32 +380,19 @@
         btn.disabled = true;
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/login`, {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ identifier, password })
+                body: JSON.stringify({ fullName, username, email, password, role })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // Save to localStorage
-                localStorage.setItem("token",    data.token);
-                localStorage.setItem("role",     data.role);
-                localStorage.setItem("username", data.username);
-                localStorage.setItem("fullName", data.fullName);
-
-                showSuccess("Login successful!");
-
-                setTimeout(() => {
-                    if (data.role === "ADMIN") {
-                        window.location.href = "dashboard-admin.html";
-                    } else {
-                        window.location.href = "dashboard-cashier.html";
-                    }
-                }, 1500);
+                showSuccess("Account created successfully!");
+                setTimeout(() => window.location.href = "login.html", 2000);
             } else {
-                showError(data.message || "Invalid username/email or password.");
+                showError(data.message || Object.values(data).join(", "));
             }
         } catch (err) {
             showError("Cannot connect to server. Make sure backend is running on port 8080.");
@@ -433,7 +402,7 @@
         }
     }
 
-    document.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+    document.addEventListener("keydown", e => { if (e.key === "Enter") register(); });
 </script>
 
 </body>

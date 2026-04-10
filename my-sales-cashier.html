@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sales — SmartBiz Cashier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0f1e; --sidebar: #0d1528; --card: #111827; --card2: #161f35;
+            --accent: #34d399; --accent2: #059669; --gold: #f0a500; --gold2: #e05c2a;
+            --text: #f0eee8; --muted: #7a8599; --border: rgba(255,255,255,0.06);
+            --success: #34d399; --danger: #ff5a5a; --info: #60a5fa;
+            --input-bg: rgba(255,255,255,0.04); --input-border: rgba(255,255,255,0.1);
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+        .sidebar { width: 240px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+        .sidebar-brand { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: contain; }
+        .sidebar-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+        .sidebar-brand-name span { color: var(--accent); }
+        .sidebar-role { margin: 1rem 1rem 0.5rem; padding: 0.5rem 0.75rem; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: 8px; font-size: 0.75rem; color: var(--accent); text-align: center; letter-spacing: 0.08em; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; }
+        .nav-section { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.5rem; font-size: 0.88rem; color: rgba(240,238,232,0.65); border-left: 3px solid transparent; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); border-left-color: rgba(52,211,153,0.3); }
+        .nav-item.active { background: rgba(52,211,153,0.08); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+        .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+        .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; background: rgba(255,90,90,0.08); border: 1px solid rgba(255,90,90,0.2); border-radius: 8px; color: var(--danger); font-size: 0.875rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(255,90,90,0.15); }
+
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+        .topbar-left p { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+        .topbar-right { display: flex; align-items: center; gap: 1rem; }
+        .topbar-day { font-size: 0.72rem; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: 500; }
+        .topbar-date { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 20px; }
+        .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #fff; }
+
+        .content { padding: 2rem; flex: 1; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+        .page-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .btn-new-sale { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.25rem; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: none; box-shadow: 0 4px 16px rgba(52,211,153,0.2); transition: opacity 0.2s, transform 0.15s; }
+        .btn-new-sale:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+        .mini-stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; animation: fadeUp 0.4s ease both; }
+        .mini-stat:nth-child(1) { animation-delay: 0.05s; }
+        .mini-stat:nth-child(2) { animation-delay: 0.1s; }
+        .mini-stat:nth-child(3) { animation-delay: 0.15s; }
+        .mini-stat:nth-child(4) { animation-delay: 0.2s; }
+        .mini-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .mini-icon.green  { background: rgba(52,211,153,0.12); }
+        .mini-icon.gold   { background: rgba(240,165,0,0.12); }
+        .mini-icon.blue   { background: rgba(96,165,250,0.12); }
+        .mini-icon.orange { background: rgba(224,92,42,0.12); }
+        .mini-value { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; line-height: 1; }
+        .mini-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.75rem; animation: fadeUp 0.5s ease 0.2s both; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+        .card-subtitle { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+
+        .toolbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .search-box { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+        .search-box input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; padding: 0.65rem 1rem 0.65rem 2.5rem; outline: none; transition: border-color 0.2s; }
+        .search-box input:focus { border-color: rgba(52,211,153,0.4); }
+        .search-box input::placeholder { color: var(--muted); }
+        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+        .filter-select { background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; padding: 0.65rem 1rem; outline: none; cursor: pointer; }
+        .filter-select option { background: #1e2a42; }
+        .results-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; animation: fadeUp 0.5s ease 0.3s both; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--card2); white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { padding: 0.9rem 1.25rem; font-size: 0.875rem; white-space: nowrap; }
+
+        .invoice-no { font-weight: 600; color: var(--accent); letter-spacing: 0.03em; }
+        .badge { display: inline-block; padding: 0.22rem 0.65rem; border-radius: 20px; font-size: 0.72rem; font-weight: 500; }
+        .badge-cash   { background: rgba(52,211,153,0.12); color: var(--success); }
+        .badge-card   { background: rgba(96,165,250,0.12); color: var(--info); }
+        .badge-mobile { background: rgba(240,165,0,0.12);  color: var(--gold); }
+        .badge-other  { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+        .btn-view { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 7px; border: 1px solid rgba(52,211,153,0.3); background: rgba(52,211,153,0.06); color: var(--accent); font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .btn-view:hover { background: rgba(52,211,153,0.12); }
+
+        .empty-state { text-align: center; padding: 4rem 1rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-text { color: var(--muted); font-size: 0.9rem; }
+
+        /* View Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 460px; padding: 2rem; margin: 1rem; transform: translateY(20px) scale(0.97); transition: transform 0.25s; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--card2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); }
+        .modal-close:hover { color: var(--text); }
+        .invoice-header { background: linear-gradient(135deg, rgba(52,211,153,0.08), rgba(5,150,105,0.08)); border: 1px solid rgba(52,211,153,0.15); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+        .invoice-no-big { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+        .invoice-date { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+        .view-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .view-info-item { background: var(--card2); border-radius: 8px; padding: 0.65rem 0.85rem; }
+        .view-info-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+        .view-info-value { font-size: 0.875rem; font-weight: 500; margin-top: 0.2rem; }
+        .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+        .btn-cancel { padding: 0.7rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; cursor: pointer; }
+        .btn-cancel:hover { color: var(--text); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 1100px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .content { padding: 1rem; } }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img src="logo.png" alt="SmartBiz">
+        <div class="sidebar-brand-name">Smart<span>Biz</span></div>
+    </div>
+    <div class="sidebar-role">🧾 Cashier Panel</div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a class="nav-item" href="dashboard-cashier.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a class="nav-item" href="clients-cashier.html"><span class="nav-icon">👥</span> Clients</a>
+        <a class="nav-item" href="products-cashier.html"><span class="nav-icon">📦</span> Products</a>
+        <div class="nav-section">Transactions</div>
+        <a class="nav-item" href="sales-cashier.html"><span class="nav-icon">🧾</span> New Sale</a>
+        <a class="nav-item active" href="my-sales-cashier.html"><span class="nav-icon">📋</span> My Sales</a>
+        <a class="nav-item" href="expenses-cashier.html"><span class="nav-icon">💸</span> Expenses</a>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+            <h1>My Sales</h1>
+            <p>Your personal sales history</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-day" id="currentDay"></div>
+            <div class="topbar-date">📅 <span id="currentDate"></span></div>
+            <div class="topbar-avatar" id="avatarInitial">C</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="page-header">
+            <div>
+                <div class="page-title">My Sales History</div>
+                <div class="page-subtitle">All sales you have recorded</div>
+            </div>
+            <a class="btn-new-sale" href="sales-cashier.html">＋ New Sale</a>
+        </div>
+
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-icon green">🧾</div>
+                <div><div class="mini-value" id="statTotal">0</div><div class="mini-label">Total Sales</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon gold">💰</div>
+                <div><div class="mini-value" id="statRevenue">RWF 0</div><div class="mini-label">Total Revenue</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon blue">📅</div>
+                <div><div class="mini-value" id="statToday">RWF 0</div><div class="mini-label">Today</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon orange">📆</div>
+                <div><div class="mini-value" id="statMonth">RWF 0</div><div class="mini-label">This Month</div></div>
+            </div>
+        </div>
+
+        <!-- Weekly chart -->
+        <div class="chart-card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">My Sales This Week</div>
+                    <div class="card-subtitle">Daily performance</div>
+                </div>
+            </div>
+            <canvas id="weekChart" height="90"></canvas>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search invoice, client..." oninput="filterSales()">
+            </div>
+            <select class="filter-select" id="payFilter" onchange="filterSales()">
+                <option value="all">All Payments</option>
+                <option value="CASH">Cash</option>
+                <option value="CARD">Card</option>
+                <option value="MOBILE">Mobile Money</option>
+            </select>
+            <span class="results-count" id="resultsCount"></span>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Invoice No</th>
+                            <th>Client</th>
+                            <th>Total</th>
+                            <th>Discount</th>
+                            <th>Final Amount</th>
+                            <th>Payment</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="9" style="text-align:center;padding:3rem;color:var(--muted);">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Sale Details</div>
+            <div class="modal-close" onclick="closeModal('viewModal')">✕</div>
+        </div>
+        <div class="invoice-header">
+            <div>
+                <div class="invoice-no-big" id="vInvoice">—</div>
+                <div class="invoice-date" id="vDate">—</div>
+            </div>
+            <div id="vPayBadge"></div>
+        </div>
+        <div class="view-info-grid">
+            <div class="view-info-item"><div class="view-info-label">Client</div><div class="view-info-value" id="vClient">—</div></div>
+            <div class="view-info-item"><div class="view-info-label">Payment</div><div class="view-info-value" id="vPayment">—</div></div>
+            <div class="view-info-item"><div class="view-info-label">Total Amount</div><div class="view-info-value" id="vTotal">—</div></div>
+            <div class="view-info-item"><div class="view-info-label">Discount</div><div class="view-info-value" id="vDiscount">—</div></div>
+            <div class="view-info-item" style="grid-column:1/-1;"><div class="view-info-label">Final Amount</div><div class="view-info-value" id="vFinal" style="color:var(--accent);font-size:1.1rem;">—</div></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('viewModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL  = "http://localhost:8080";
+    const token    = localStorage.getItem("token");
+    const role     = localStorage.getItem("role");
+    const fullName = localStorage.getItem("fullName") || "Cashier";
+
+    if (!token || role !== "CASHIER") window.location.href = "login.html";
+
+    const now  = new Date();
+    const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    document.getElementById("currentDay").textContent  = DAYS[now.getDay()];
+    document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
+    document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
+
+    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    let allSales = [];
+
+    async function loadSales() {
+        try {
+            const res = await fetch(`${API_URL}/api/sales`, { headers });
+            if (!res.ok) throw new Error();
+            allSales = await res.json();
+            renderTable(allSales);
+            updateStats(allSales);
+            renderChart(allSales);
+        } catch {
+            document.getElementById("tableBody").innerHTML =
+                `<tr><td colspan="9" style="text-align:center;padding:3rem;color:var(--danger);">Failed to load sales.</td></tr>`;
+        }
+    }
+
+    function renderTable(sales) {
+        const tbody = document.getElementById("tableBody");
+        document.getElementById("resultsCount").textContent = `${sales.length} sale(s)`;
+        if (sales.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-text">No sales found.</div></div></td></tr>`;
+            return;
+        }
+        tbody.innerHTML = sales.map((s, i) => {
+            const id       = s.saleId ?? s.id;
+            const invoice  = s.invoiceNo ?? "—";
+            const client   = s.clientName ?? s.client?.fullName ?? "—";
+            const total    = Number(s.totalAmount ?? 0).toLocaleString();
+            const disc     = Number(s.discount ?? 0);
+            const final    = Number(s.finalAmount ?? s.totalAmount ?? 0).toLocaleString();
+            const pay      = s.paymentMethod ?? "—";
+            const date     = s.saleDate ? new Date(s.saleDate).toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" }) : "—";
+            const cls      = pay==="CASH"?"badge-cash":pay==="CARD"?"badge-card":pay==="MOBILE"?"badge-mobile":"badge-other";
+            return `<tr>
+                <td style="color:var(--muted);">${i+1}</td>
+                <td><span class="invoice-no">${invoice}</span></td>
+                <td>${client}</td>
+                <td>RWF ${total}</td>
+                <td style="color:var(--danger);">${disc>0?`- RWF ${disc.toLocaleString()}`:"—"}</td>
+                <td style="color:var(--accent);font-weight:600;">RWF ${final}</td>
+                <td><span class="badge ${cls}">${pay}</span></td>
+                <td style="color:var(--muted);">${date}</td>
+                <td><div class="btn-view" onclick="openView(${id})">👁 View</div></td>
+            </tr>`;
+        }).join("");
+    }
+
+    function updateStats(sales) {
+        const total    = sales.reduce((s, x) => s + Number(x.finalAmount ?? x.totalAmount ?? 0), 0);
+        const todayStr = now.toDateString();
+        const month    = now.getMonth();
+        const todayAmt = sales.filter(x => new Date(x.saleDate).toDateString() === todayStr).reduce((s, x) => s + Number(x.finalAmount ?? 0), 0);
+        const monthAmt = sales.filter(x => new Date(x.saleDate).getMonth() === month).reduce((s, x) => s + Number(x.finalAmount ?? 0), 0);
+        document.getElementById("statTotal").textContent   = sales.length;
+        document.getElementById("statRevenue").textContent = "RWF " + total.toLocaleString();
+        document.getElementById("statToday").textContent   = "RWF " + todayAmt.toLocaleString();
+        document.getElementById("statMonth").textContent   = "RWF " + monthAmt.toLocaleString();
+    }
+
+    function renderChart(sales) {
+        const labels = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+        const data   = new Array(7).fill(0);
+        sales.forEach(s => {
+            const d = new Date(s.saleDate).getDay();
+            const idx = d === 0 ? 6 : d - 1;
+            data[idx] += Number(s.finalAmount ?? s.totalAmount ?? 0);
+        });
+        new Chart(document.getElementById("weekChart"), {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [{ label: "Sales (RWF)", data, backgroundColor: "rgba(52,211,153,0.65)", borderColor: "rgba(52,211,153,1)", borderWidth: 1, borderRadius: 5 }]
+            },
+            options: { responsive: true, plugins: { legend: { labels: { color: "#7a8599", font: { size: 11 } } } }, scales: { x: { ticks: { color: "#7a8599" }, grid: { color: "rgba(255,255,255,0.04)" } }, y: { ticks: { color: "#7a8599" }, grid: { color: "rgba(255,255,255,0.04)" } } } }
+        });
+    }
+
+    function filterSales() {
+        const s   = document.getElementById("searchInput").value.toLowerCase();
+        const pay = document.getElementById("payFilter").value;
+        let filtered = allSales.filter(x => (x.invoiceNo ?? "").toLowerCase().includes(s) || (x.clientName ?? x.client?.fullName ?? "").toLowerCase().includes(s));
+        if (pay !== "all") filtered = filtered.filter(x => (x.paymentMethod ?? "") === pay);
+        renderTable(filtered);
+    }
+
+    function openView(id) {
+        const s = allSales.find(x => (x.saleId ?? x.id) === id);
+        if (!s) return;
+        const p   = s.paymentMethod ?? "";
+        const cls = p==="CASH"?"badge-cash":p==="CARD"?"badge-card":p==="MOBILE"?"badge-mobile":"badge-other";
+        document.getElementById("vInvoice").textContent  = s.invoiceNo ?? "—";
+        document.getElementById("vDate").textContent     = s.saleDate ? new Date(s.saleDate).toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }) : "—";
+        document.getElementById("vClient").textContent   = s.clientName ?? s.client?.fullName ?? "—";
+        document.getElementById("vPayment").textContent  = p || "—";
+        document.getElementById("vTotal").textContent    = "RWF " + Number(s.totalAmount ?? 0).toLocaleString();
+        document.getElementById("vDiscount").textContent = "RWF " + Number(s.discount ?? 0).toLocaleString();
+        document.getElementById("vFinal").textContent    = "RWF " + Number(s.finalAmount ?? s.totalAmount ?? 0).toLocaleString();
+        document.getElementById("vPayBadge").innerHTML   = `<span class="badge ${cls}">${p}</span>`;
+        document.getElementById("viewModal").classList.add("show");
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+    function logout()       { localStorage.clear(); window.location.href = "login.html"; }
+
+    document.querySelectorAll(".modal-overlay").forEach(o => {
+        o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });
+    });
+
+    loadSales();
+</script>
+    <script src="responsive.js"></script>
+</body>
+</html>

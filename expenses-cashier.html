@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses — SmartBiz Cashier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0f1e; --sidebar: #0d1528; --card: #111827; --card2: #161f35;
+            --accent: #34d399; --accent2: #059669; --gold: #f0a500; --gold2: #e05c2a;
+            --text: #f0eee8; --muted: #7a8599; --border: rgba(255,255,255,0.06);
+            --success: #34d399; --danger: #ff5a5a; --info: #60a5fa;
+            --input-bg: rgba(255,255,255,0.04); --input-border: rgba(255,255,255,0.1);
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+        .sidebar { width: 240px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+        .sidebar-brand { display: flex; align-items: center; gap: 0.75rem; padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: contain; }
+        .sidebar-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+        .sidebar-brand-name span { color: var(--accent); }
+        .sidebar-role { margin: 1rem 1rem 0.5rem; padding: 0.5rem 0.75rem; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: 8px; font-size: 0.75rem; color: var(--accent); text-align: center; letter-spacing: 0.08em; text-transform: uppercase; }
+        .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; }
+        .nav-section { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.5rem 0.4rem; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.5rem; font-size: 0.88rem; color: rgba(240,238,232,0.65); border-left: 3px solid transparent; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); border-left-color: rgba(52,211,153,0.3); }
+        .nav-item.active { background: rgba(52,211,153,0.08); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+        .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+        .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; background: rgba(255,90,90,0.08); border: 1px solid rgba(255,90,90,0.2); border-radius: 8px; color: var(--danger); font-size: 0.875rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(255,90,90,0.15); }
+
+        .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .topbar-left h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+        .topbar-left p { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+        .topbar-right { display: flex; align-items: center; gap: 1rem; }
+        .topbar-day { font-size: 0.72rem; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent); padding: 0.3rem 0.75rem; border-radius: 20px; font-weight: 500; }
+        .topbar-date { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 20px; }
+        .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #fff; }
+
+        .content { padding: 2rem; flex: 1; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+        .page-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+        .btn-primary { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.25rem; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.15s; box-shadow: 0 4px 16px rgba(52,211,153,0.2); }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+        .mini-stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; animation: fadeUp 0.4s ease both; }
+        .mini-stat:nth-child(1) { animation-delay: 0.05s; }
+        .mini-stat:nth-child(2) { animation-delay: 0.1s; }
+        .mini-stat:nth-child(3) { animation-delay: 0.15s; }
+        .mini-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .mini-icon.red    { background: rgba(255,90,90,0.12); }
+        .mini-icon.orange { background: rgba(224,92,42,0.12); }
+        .mini-icon.blue   { background: rgba(96,165,250,0.12); }
+        .mini-value { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; line-height: 1; }
+        .mini-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .toolbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+        .search-box { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+        .search-box input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; padding: 0.65rem 1rem 0.65rem 2.5rem; outline: none; transition: border-color 0.2s; }
+        .search-box input:focus { border-color: rgba(52,211,153,0.4); }
+        .search-box input::placeholder { color: var(--muted); }
+        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+        .results-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+        .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; animation: fadeUp 0.5s ease 0.2s both; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--card2); white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { padding: 0.9rem 1.25rem; font-size: 0.875rem; white-space: nowrap; }
+
+        .amount-cell { color: var(--danger); font-weight: 600; font-family: 'Playfair Display', serif; }
+
+        .empty-state { text-align: center; padding: 4rem 1rem; }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-text { color: var(--muted); font-size: 0.9rem; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 440px; padding: 2rem; margin: 1rem; transform: translateY(20px) scale(0.97); transition: transform 0.25s; }
+        .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--card2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); }
+        .modal-close:hover { color: var(--text); }
+        .form-group { margin-bottom: 1.1rem; }
+        .form-label { display: block; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.45rem; }
+        .form-input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; padding: 0.72rem 1rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-input:focus { border-color: rgba(52,211,153,0.5); box-shadow: 0 0 0 3px rgba(52,211,153,0.08); }
+        .form-input::placeholder { color: rgba(122,133,153,0.6); }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+        .btn-cancel { padding: 0.7rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; cursor: pointer; }
+        .btn-cancel:hover { color: var(--text); }
+        .btn-save { padding: 0.7rem 1.5rem; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 0.9rem 1.25rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500; z-index: 2000; transform: translateY(20px); opacity: 0; transition: all 0.3s; display: flex; align-items: center; gap: 0.6rem; min-width: 220px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); color: var(--success); }
+        .toast.error   { background: rgba(255,90,90,0.15);  border: 1px solid rgba(255,90,90,0.3);  color: var(--danger); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .content { padding: 1rem; } .stats-row { grid-template-columns: 1fr; } .form-row-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img src="logo.png" alt="SmartBiz">
+        <div class="sidebar-brand-name">Smart<span>Biz</span></div>
+    </div>
+    <div class="sidebar-role">🧾 Cashier Panel</div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a class="nav-item" href="dashboard-cashier.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a class="nav-item" href="clients-cashier.html"><span class="nav-icon">👥</span> Clients</a>
+        <a class="nav-item" href="products-cashier.html"><span class="nav-icon">📦</span> Products</a>
+        <div class="nav-section">Transactions</div>
+        <a class="nav-item" href="sales-cashier.html"><span class="nav-icon">🧾</span> New Sale</a>
+        <a class="nav-item" href="my-sales-cashier.html"><span class="nav-icon">📋</span> My Sales</a>
+        <a class="nav-item active" href="expenses-cashier.html"><span class="nav-icon">💸</span> Expenses</a>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+            <h1>Expenses</h1>
+            <p>Record business expenses</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-day" id="currentDay"></div>
+            <div class="topbar-date">📅 <span id="currentDate"></span></div>
+            <div class="topbar-avatar" id="avatarInitial">C</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="page-header">
+            <div>
+                <div class="page-title">Expense Records</div>
+                <div class="page-subtitle">Record and view your expense entries</div>
+            </div>
+            <button class="btn-primary" onclick="openModal('formModal')">
+                <span>＋</span> Record Expense
+            </button>
+        </div>
+
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-icon red">💸</div>
+                <div><div class="mini-value" id="statTotal">RWF 0</div><div class="mini-label">Total Recorded</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon orange">📅</div>
+                <div><div class="mini-value" id="statToday">RWF 0</div><div class="mini-label">Today</div></div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-icon blue">🔢</div>
+                <div><div class="mini-value" id="statCount">0</div><div class="mini-label">Total Records</div></div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search expenses..." oninput="filterExpenses()">
+            </div>
+            <span class="results-count" id="resultsCount"></span>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Expense Name</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Recorded By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="5" style="text-align:center;padding:3rem;color:var(--muted);">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">💸 Record Expense</div>
+            <div class="modal-close" onclick="closeModal('formModal')">✕</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Expense Name *</label>
+            <input type="text" class="form-input" id="fName" placeholder="e.g. Office Supplies, Transport">
+        </div>
+
+        <div class="form-row-2">
+            <div class="form-group">
+                <label class="form-label">Amount (RWF) *</label>
+                <input type="number" class="form-input" id="fAmount" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Date *</label>
+                <input type="datetime-local" class="form-input" id="fDate">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('formModal')">Cancel</button>
+            <button class="btn-save" id="saveBtn" onclick="saveExpense()">Save Expense</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API_URL  = "http://localhost:8080";
+    const token    = localStorage.getItem("token");
+    const role     = localStorage.getItem("role");
+    const fullName = localStorage.getItem("fullName") || "Cashier";
+
+    if (!token || role !== "CASHIER") window.location.href = "login.html";
+
+    const now  = new Date();
+    const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    document.getElementById("currentDay").textContent  = DAYS[now.getDay()];
+    document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
+    document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
+
+    // Set default date to now
+    const pad = n => String(n).padStart(2,"0");
+    document.getElementById("fDate").value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    let allExpenses = [];
+
+    async function loadExpenses() {
+        try {
+            const res = await fetch(`${API_URL}/api/expenses`, { headers });
+            if (!res.ok) throw new Error();
+            allExpenses = await res.json();
+            renderTable(allExpenses);
+            updateStats(allExpenses);
+        } catch {
+            document.getElementById("tableBody").innerHTML =
+                `<tr><td colspan="5" style="text-align:center;padding:3rem;color:var(--danger);">Failed to load expenses.</td></tr>`;
+        }
+    }
+
+    function renderTable(expenses) {
+        const tbody = document.getElementById("tableBody");
+        document.getElementById("resultsCount").textContent = `${expenses.length} record(s)`;
+        if (expenses.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">No expenses recorded yet.</div></div></td></tr>`;
+            return;
+        }
+        tbody.innerHTML = expenses.map((e, i) => {
+            const name   = e.expenseName ?? e.name ?? "—";
+            const amount = Number(e.amount ?? 0).toLocaleString();
+            const date   = e.expenseDate ? new Date(e.expenseDate).toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" }) : "—";
+            const user   = e.userName ?? e.user?.username ?? e.user?.fullName ?? fullName;
+            return `<tr>
+                <td style="color:var(--muted);">${i+1}</td>
+                <td style="font-weight:500;">${name}</td>
+                <td><span class="amount-cell">RWF ${amount}</span></td>
+                <td style="color:var(--muted);">${date}</td>
+                <td style="color:var(--muted);">${user}</td>
+            </tr>`;
+        }).join("");
+    }
+
+    function updateStats(expenses) {
+        const total    = expenses.reduce((s, e) => s + Number(e.amount ?? 0), 0);
+        const todayStr = now.toDateString();
+        const todayAmt = expenses.filter(e => new Date(e.expenseDate).toDateString() === todayStr).reduce((s, e) => s + Number(e.amount ?? 0), 0);
+        document.getElementById("statTotal").textContent = "RWF " + total.toLocaleString();
+        document.getElementById("statToday").textContent = "RWF " + todayAmt.toLocaleString();
+        document.getElementById("statCount").textContent = expenses.length;
+    }
+
+    function filterExpenses() {
+        const s = document.getElementById("searchInput").value.toLowerCase();
+        renderTable(allExpenses.filter(e => (e.expenseName ?? e.name ?? "").toLowerCase().includes(s)));
+    }
+
+    async function saveExpense() {
+        const expenseName = document.getElementById("fName").value.trim();
+        const amount      = document.getElementById("fAmount").value;
+        const expenseDate = document.getElementById("fDate").value;
+
+        if (!expenseName || !amount) {
+            showToast("Please fill in all required fields.", "error"); return;
+        }
+
+        const body = { expenseName, amount: parseFloat(amount), expenseDate: expenseDate || new Date().toISOString() };
+
+        const btn = document.getElementById("saveBtn");
+        btn.disabled = true; btn.textContent = "Saving...";
+
+        try {
+            const res  = await fetch(`${API_URL}/api/expenses`, { method: "POST", headers, body: JSON.stringify(body) });
+            const data = await res.json();
+            if (res.ok) {
+                showToast("Expense recorded!", "success");
+                closeModal("formModal");
+                document.getElementById("fName").value   = "";
+                document.getElementById("fAmount").value = "";
+                loadExpenses();
+            } else {
+                showToast(data.message || "Failed to save expense.", "error");
+            }
+        } catch { showToast("Server error.", "error"); }
+        finally { btn.disabled = false; btn.textContent = "Save Expense"; }
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add("show"); }
+    function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+
+    function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        t.textContent = (type === "success" ? "✓ " : "⚠ ") + msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove("show"), 3500);
+    }
+
+    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+
+    document.querySelectorAll(".modal-overlay").forEach(o => {
+        o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });
+    });
+
+    loadExpenses();
+</script>
+    <script src="responsive.js"></script>
+</body>
+</html>
