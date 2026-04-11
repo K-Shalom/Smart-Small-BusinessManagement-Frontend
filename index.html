@@ -129,7 +129,7 @@
 
         .right-panel {
             flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 2rem; background: var(--panel); position: relative; 
+            padding: 2rem; background: var(--panel); position: relative;
         }
 
         .right-panel::before {
@@ -262,7 +262,6 @@
             .right-panel { padding: 2rem 1.25rem 3rem; }
         }
     </style>
-    <script src="config.js"></script>
 </head>
 <body>
 
@@ -300,7 +299,7 @@
         </div>
     </div>
 
-    <div class="left-footer">© 2026 SmartBiz · Rwanda Polytechnic <a href="https://github.com/K-Shalom"  target="_blank">Shalom K</a></div>
+    <div class="left-footer">© 2026 SmartBiz · Rwanda Polytechnic <a href="https://github.com/K-Shalom" target="_blank">Shalom K</a></div>
 </div>
 
 <div class="right-panel">
@@ -323,7 +322,6 @@
             <span>✓</span><span id="successText"></span>
         </div>
 
-        <!-- identifier = username or email -->
         <div class="input-group">
             <label>Username or Email</label>
             <div class="input-wrapper">
@@ -367,7 +365,7 @@
 </div>
 
 <script>
-    const API_URL = `${API_BASE_URL}`;
+    const API_URL = 'https://smart-small-businessmanagement-backend-production.up.railway.app';
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
@@ -412,7 +410,6 @@
             const data = await response.json();
 
             if (response.ok) {
-                // Save to localStorage
                 localStorage.setItem("token",    data.token);
                 localStorage.setItem("role",     data.role);
                 localStorage.setItem("username", data.username);
@@ -431,7 +428,7 @@
                 showError(data.message || "Invalid username/email or password.");
             }
         } catch (err) {
-            showError("Cannot connect to server. Make sure backend is running on port 8080.");
+            showError("Connection error: " + err.message);
         } finally {
             btn.classList.remove("loading");
             btn.disabled = false;
