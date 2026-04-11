@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -112,7 +113,9 @@ a{
         .hero-title em {
             font-style: italic;
             background: linear-gradient(90deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 340px; }
@@ -329,14 +332,14 @@ a{
 
         <p style="text-align:center; margin-top:1.2rem; font-size:0.875rem; color:var(--muted);">
             Already have an account?
-            <a href="login.html" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in →</a>
+            <a href="index.html" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in →</a>
         </p>
 
     </div>
 </div>
 
 <script>
-    const API_URL = "http://localhost:8080";
+    const API_URL = `${API_BASE_URL}`;
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
@@ -390,7 +393,7 @@ a{
 
             if (response.ok) {
                 showSuccess("Account created successfully!");
-                setTimeout(() => window.location.href = "login.html", 2000);
+                setTimeout(() => window.location.href = "index.html", 2000);
             } else {
                 showError(data.message || Object.values(data).join(", "));
             }

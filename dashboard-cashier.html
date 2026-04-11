@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashier Dashboard — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
@@ -384,13 +385,13 @@
 </div>
 
 <script>
-    const API_URL  = "http://localhost:8080";
+    const API_URL  = `${API_BASE_URL}`;
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
 
     // ── Guard — CASHIER only ──
-    if (!token || role !== "CASHIER") window.location.href = "login.html";
+    if (!token || role !== "CASHIER") window.location.href = "index.html";
 
     // ── Date & Day ──
     const now  = new Date();
@@ -525,7 +526,7 @@
         });
     }
 
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
     loadStats();
 </script>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Sale — SmartBiz Cashier</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -415,12 +416,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = "http://localhost:8080";
+    const API_URL  = `${API_BASE_URL}`;
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
 
-    if (!token || role !== "CASHIER") window.location.href = "login.html";
+    if (!token || role !== "CASHIER") window.location.href = "index.html";
 
     // ── Date & Day ──
     const now  = new Date();
@@ -750,7 +751,7 @@
         setTimeout(() => t.classList.remove("show"), 4000);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
     init();
 </script>

@@ -160,6 +160,7 @@
             .form-row-2 { grid-template-columns: 1fr; }
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -348,13 +349,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = "http://localhost:8080";
+    const API_URL  = `${API_BASE_URL}`;
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
 
     // ── Guard ──
-    if (!token || role !== "CASHIER") window.location.href = "login.html";
+    if (!token || role !== "CASHIER") window.location.href = "index.html";
 
     // ── Date & Day ──
     const now  = new Date();
@@ -548,7 +549,7 @@
         setTimeout(() => t.classList.remove("show"), 3500);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "login.html"; }
+    function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
     document.querySelectorAll(".modal-overlay").forEach(o => {
         o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });

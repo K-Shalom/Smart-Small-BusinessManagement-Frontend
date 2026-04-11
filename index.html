@@ -106,7 +106,9 @@
         .hero-title em {
             font-style: italic;
             background: linear-gradient(90deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 340px; }
@@ -116,7 +118,9 @@
         .stat-number {
             font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700;
             background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
         .stat-divider { width: 1px; background: rgba(255,255,255,0.08); align-self: stretch; }
@@ -258,6 +262,7 @@
             .right-panel { padding: 2rem 1.25rem 3rem; }
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
 
@@ -362,7 +367,7 @@
 </div>
 
 <script>
-    const API_URL = "http://localhost:8080";
+    const API_URL = `${API_BASE_URL}`;
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
