@@ -340,7 +340,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -367,7 +367,7 @@
     // ── Load users to match recorded by ──
     async function loadUsers() {
         try {
-            const res = await fetch(`${API_URL}/api/users`, { headers });
+            const res = await fetch(`${API_BASE_URL}/users`, { headers });
             if (res.ok) allUsers = await res.json();
         } catch {}
     }
@@ -394,7 +394,7 @@
     // ── Load Expenses ──
     async function loadExpenses() {
         try {
-            const res = await fetch(`${API_URL}/api/expenses`, { headers });
+            const res = await fetch(`${API_BASE_URL}/expenses`, { headers });
             if (!res.ok) throw new Error();
             allExpenses = await res.json();
             renderTable(allExpenses);
@@ -543,7 +543,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-            const url    = editingId ? `${API_URL}/api/expenses/${editingId}` : `${API_URL}/api/expenses`;
+            const url    = editingId ? `${API_BASE_URL}/expenses/${editingId}` : `${API_BASE_URL}/expenses`;
             const method = editingId ? "PUT" : "POST";
             const res    = await fetch(url, { method, headers, body: JSON.stringify(body) });
             const data   = await res.json();
@@ -570,7 +570,7 @@
 
     async function deleteExpense(id) {
         try {
-            const res = await fetch(`${API_URL}/api/expenses/${id}`, { method:"DELETE", headers });
+            const res = await fetch(`${API_BASE_URL}/expenses/${id}`, { method:"DELETE", headers });
             if (res.ok) { showToast("Expense deleted.", "success"); closeModal("deleteModal"); loadExpenses(); }
             else showToast("Failed to delete expense.", "error");
         } catch { showToast("Server error.", "error"); }

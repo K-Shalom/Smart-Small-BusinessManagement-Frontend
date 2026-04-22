@@ -349,7 +349,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
@@ -372,7 +372,7 @@
     // ── Load Clients ──
     async function loadClients() {
         try {
-            const res = await fetch(`${API_URL}/api/clients`, { headers });
+            const res = await fetch(`${API_BASE_URL}/clients`, { headers });
             if (!res.ok) throw new Error();
             allClients = await res.json();
             renderTable(allClients);
@@ -493,7 +493,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-            const res  = await fetch(`${API_URL}/api/clients`, { method:"POST", headers, body: JSON.stringify(body) });
+            const res  = await fetch(`${API_BASE_URL}/clients`, { method:"POST", headers, body: JSON.stringify(body) });
             const data = await res.json();
 
             if (res.ok) {

@@ -245,7 +245,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
@@ -267,7 +267,7 @@
 
     async function loadExpenses() {
         try {
-            const res = await fetch(`${API_URL}/api/expenses`, { headers });
+            const res = await fetch(`${API_BASE_URL}/expenses`, { headers });
             if (!res.ok) throw new Error();
             allExpenses = await res.json();
             renderTable(allExpenses);
@@ -329,7 +329,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-            const res  = await fetch(`${API_URL}/api/expenses`, { method: "POST", headers, body: JSON.stringify(body) });
+            const res  = await fetch(`${API_BASE_URL}/expenses`, { method: "POST", headers, body: JSON.stringify(body) });
             const data = await res.json();
             if (res.ok) {
                 showToast("Expense recorded!", "success");

@@ -605,7 +605,7 @@
 </div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -640,7 +640,7 @@
     async function loadStats() {
         try {
             // Load sales
-            const salesRes = await fetch(`${API_URL}/api/sales`, { headers });
+            const salesRes = await fetch(`${API_BASE_URL}/sales`, { headers });
             if (salesRes.ok) {
                 const sales = await salesRes.json();
                 const total = sales.reduce((sum, s) => sum + (s.finalAmount || s.totalAmount || 0), 0);
@@ -649,14 +649,14 @@
             }
 
             // Load expenses
-            const expRes = await fetch(`${API_URL}/api/expenses`, { headers });
+            const expRes = await fetch(`${API_BASE_URL}/expenses`, { headers });
             if (expRes.ok) {
                 const expenses = await expRes.json();
                 const totalExp = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
                 document.getElementById("totalExpenses").textContent = formatRWF(totalExp);
 
                 // Calculate profit
-                const salesRes2 = await fetch(`${API_URL}/api/sales`, { headers });
+                const salesRes2 = await fetch(`${API_BASE_URL}/sales`, { headers });
                 if (salesRes2.ok) {
                     const sales2 = await salesRes2.json();
                     const totalSales = sales2.reduce((sum, s) => sum + (s.finalAmount || s.totalAmount || 0), 0);
@@ -673,7 +673,7 @@
             }
 
             // Load users count
-            const usersRes = await fetch(`${API_URL}/api/users`, { headers });
+            const usersRes = await fetch(`${API_BASE_URL}/users`, { headers });
             if (usersRes.ok) {
                 const users = await usersRes.json();
                 document.getElementById("totalUsers").textContent = users.length;
@@ -721,8 +721,8 @@
 
         try {
             const [sRes, eRes] = await Promise.all([
-                fetch(`${API_URL}/api/sales`, { headers }),
-                fetch(`${API_URL}/api/expenses`, { headers })
+                fetch(`${API_BASE_URL}/sales`, { headers }),
+                fetch(`${API_BASE_URL}/expenses`, { headers })
             ]);
 
             if (sRes.ok) {

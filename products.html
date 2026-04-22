@@ -324,7 +324,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -346,7 +346,7 @@
     // ── Load Products ──
     async function loadProducts() {
         try {
-            const res = await fetch(`${API_URL}/api/products`, { headers });
+            const res = await fetch(`${API_BASE_URL}/products`, { headers });
             if (!res.ok) throw new Error();
             allProducts = await res.json();
             renderTable(allProducts);
@@ -484,7 +484,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-            const url    = editingId ? `${API_URL}/api/products/${editingId}` : `${API_URL}/api/products`;
+            const url    = editingId ? `${API_BASE_URL}/products/${editingId}` : `${API_BASE_URL}/products`;
             const method = editingId ? "PUT" : "POST";
             const res    = await fetch(url, { method, headers, body: JSON.stringify(body) });
             const data   = await res.json();
@@ -512,7 +512,7 @@
 
     async function deleteProduct(id) {
         try {
-            const res = await fetch(`${API_URL}/api/products/${id}`, { method:"DELETE", headers });
+            const res = await fetch(`${API_BASE_URL}/products/${id}`, { method:"DELETE", headers });
             if (res.ok) {
                 showToast("Product deleted.", "success");
                 closeModal("deleteModal");

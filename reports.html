@@ -293,7 +293,7 @@
 </div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -323,7 +323,7 @@
 
     async function loadSales() {
         try {
-            const res = await fetch(`${API_URL}/api/sales`, { headers });
+            const res = await fetch(`${API_BASE_URL}/sales`, { headers });
             if (!res.ok) throw new Error();
             const sales = await res.json();
 
@@ -362,7 +362,7 @@
 
     async function loadExpenses() {
         try {
-            const res = await fetch(`${API_URL}/api/expenses`, { headers });
+            const res = await fetch(`${API_BASE_URL}/expenses`, { headers });
             if (!res.ok) throw new Error();
             const expenses = await res.json();
 
@@ -408,7 +408,7 @@
 
         try {
             const res = await fetch(
-                `${API_URL}/api/reports/generate?type=${selectedType}`,
+                `${API_BASE_URL}/reports/generate?type=${selectedType}`,
                 { method: "GET", headers }
             );
 

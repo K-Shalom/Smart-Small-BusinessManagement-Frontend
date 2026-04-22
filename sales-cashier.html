@@ -416,7 +416,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
@@ -458,7 +458,7 @@
 
     async function loadClients() {
         try {
-            const res = await fetch(`${API_URL}/api/clients`, { headers });
+            const res = await fetch(`${API_BASE_URL}/clients`, { headers });
             if (!res.ok) return;
             allClients = await res.json();
             populateClientSelect();
@@ -509,7 +509,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
         
         try {
-            const res = await fetch(`${API_URL}/api/clients`, { method: "POST", headers, body: JSON.stringify(body) });
+            const res = await fetch(`${API_BASE_URL}/clients`, { method: "POST", headers, body: JSON.stringify(body) });
             if (res.ok) {
                 const data = await res.json();
                 showToast("Client added!", "success");
@@ -538,14 +538,14 @@
 
     async function loadProducts() {
         try {
-            const res = await fetch(`${API_URL}/api/products`, { headers });
+            const res = await fetch(`${API_BASE_URL}/products`, { headers });
             if (res.ok) allProducts = await res.json();
         } catch {}
     }
 
     async function loadServices() {
         try {
-            const res = await fetch(`${API_URL}/api/services`, { headers });
+            const res = await fetch(`${API_BASE_URL}/services`, { headers });
             if (res.ok) allServices = await res.json();
         } catch {}
     }
@@ -706,7 +706,7 @@
         btn.disabled = true;
 
         try {
-            const res  = await fetch(`${API_URL}/api/sales`, { method:"POST", headers, body: JSON.stringify(body) });
+            const res  = await fetch(`${API_BASE_URL}/sales`, { method:"POST", headers, body: JSON.stringify(body) });
             const data = await res.json();
 
             if (res.ok) {

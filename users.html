@@ -321,7 +321,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -340,7 +340,7 @@
 
     async function loadUsers() {
         try {
-            const res = await fetch(`${API_URL}/api/users`, { headers });
+            const res = await fetch(`${API_BASE_URL}/users`, { headers });
             if (!res.ok) throw new Error();
             allUsers = await res.json();
             renderTable(allUsers);
@@ -460,7 +460,7 @@
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-            const url    = editingId ? `${API_URL}/api/users/${editingId}` : `${API_URL}/api/users`;
+            const url    = editingId ? `${API_BASE_URL}/users/${editingId}` : `${API_BASE_URL}/users`;
             const method = editingId ? "PUT" : "POST";
             const res    = await fetch(url, { method, headers, body: JSON.stringify(body) });
             const data   = await res.json();
@@ -484,7 +484,7 @@
 
     async function deleteUser(id) {
         try {
-            const res = await fetch(`${API_URL}/api/users/${id}`, { method: "DELETE", headers });
+            const res = await fetch(`${API_BASE_URL}/users/${id}`, { method: "DELETE", headers });
             if (res.ok) { showToast("User deleted.", "success"); closeModal("deleteModal"); loadUsers(); }
             else showToast("Failed to delete user.", "error");
         } catch { showToast("Server error.", "error"); }

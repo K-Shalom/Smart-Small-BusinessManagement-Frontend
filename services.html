@@ -344,7 +344,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Admin";
@@ -369,7 +369,7 @@
     // ── Load Services ──
     async function loadServices() {
         try {
-            const res = await fetch(`${API_URL}/api/services`, { headers });
+            const res = await fetch(`${API_BASE_URL}/services`, { headers });
             if (!res.ok) throw new Error("Failed");
             allServices = await res.json();
             renderCards(allServices);
@@ -487,7 +487,7 @@
         btn.textContent = "Saving...";
 
         try {
-            const url    = editingId ? `${API_URL}/api/services/${editingId}` : `${API_URL}/api/services`;
+            const url    = editingId ? `${API_BASE_URL}/services/${editingId}` : `${API_BASE_URL}/services`;
             const method = editingId ? "PUT" : "POST";
             const res    = await fetch(url, { method, headers, body: JSON.stringify(body) });
             const data   = await res.json();
@@ -516,7 +516,7 @@
 
     async function deleteService(id) {
         try {
-            const res = await fetch(`${API_URL}/api/services/${id}`, { method: "DELETE", headers });
+            const res = await fetch(`${API_BASE_URL}/services/${id}`, { method: "DELETE", headers });
             if (res.ok) {
                 showToast("Service deleted.", "success");
                 closeModal("deleteModal");

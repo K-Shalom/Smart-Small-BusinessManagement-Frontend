@@ -197,7 +197,7 @@
 </div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
@@ -215,7 +215,7 @@
 
     async function loadProducts() {
         try {
-            const res = await fetch(`${API_URL}/api/products`, { headers });
+            const res = await fetch(`${API_BASE_URL}/products`, { headers });
             if (!res.ok) throw new Error();
             allProducts = await res.json();
             renderTable(allProducts);

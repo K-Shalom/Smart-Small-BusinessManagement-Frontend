@@ -385,7 +385,7 @@
 </div>
 
 <script>
-    const API_URL  = `${API_BASE_URL}`;
+
     const token    = localStorage.getItem("token");
     const role     = localStorage.getItem("role");
     const fullName = localStorage.getItem("fullName") || "Cashier";
@@ -419,8 +419,8 @@
     async function loadStats() {
         try {
             const [salesRes, productsRes] = await Promise.all([
-                fetch(`${API_URL}/api/sales`,    { headers }),
-                fetch(`${API_URL}/api/products`, { headers })
+                fetch(`${API_BASE_URL}/sales`,    { headers }),
+                fetch(`${API_BASE_URL}/products`, { headers })
             ]);
 
             if (salesRes.ok) {

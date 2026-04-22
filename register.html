@@ -341,7 +341,7 @@ a{
 <script>
     // API_BASE_URL comes from config.js
     // e.g. https://smart-small-businessmanagement-backend-2.onrender.com/api
-    const API_URL = `${API_BASE_URL}`;
+
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
@@ -386,7 +386,7 @@ a{
 
         try {
             // FIX: removed /api prefix — API_BASE_URL already contains /api
-            const response = await fetch(`${API_URL}/auth/register`, {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ fullName, username, email, password, role })
