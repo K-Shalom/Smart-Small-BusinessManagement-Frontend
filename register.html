@@ -339,6 +339,8 @@ a{
 </div>
 
 <script>
+    // API_BASE_URL comes from config.js
+    // e.g. https://smart-small-businessmanagement-backend-2.onrender.com/api
     const API_URL = `${API_BASE_URL}`;
 
     function showError(msg) {
@@ -383,7 +385,8 @@ a{
         btn.disabled = true;
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/register`, {
+            // FIX: removed /api prefix — API_BASE_URL already contains /api
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ fullName, username, email, password, role })
@@ -398,7 +401,8 @@ a{
                 showError(data.message || Object.values(data).join(", "));
             }
         } catch (err) {
-            showError("Cannot connect to server. Make sure backend is running on port 8080.");
+            // FIX: removed reference to port 8080
+            showError("Cannot connect to server. Please try again later.");
         } finally {
             btn.classList.remove("loading");
             btn.disabled = false;

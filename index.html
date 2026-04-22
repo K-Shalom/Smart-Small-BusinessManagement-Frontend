@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Load API base URL from config.js (single source of truth) -->
+    <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -365,8 +367,8 @@
 </div>
 
 <script>
-    // NEW - production
-const API_BASE_URL = 'https://smart-small-businessmanagement-backend-2.onrender.com/api';
+    // API_BASE_URL is loaded from config.js
+    // e.g. https://smart-small-businessmanagement-backend-2.onrender.com/api
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
@@ -402,7 +404,8 @@ const API_BASE_URL = 'https://smart-small-businessmanagement-backend-2.onrender.
         btn.disabled = true;
 
         try {
-            const response = await fetch(`${API_URL}/api/auth/login`, {
+            // FIX: use API_BASE_URL from config.js, removed extra /api prefix
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ identifier, password })
@@ -429,7 +432,7 @@ const API_BASE_URL = 'https://smart-small-businessmanagement-backend-2.onrender.
                 showError(data.message || "Invalid username/email or password.");
             }
         } catch (err) {
-            showError("Connection error: " + err.message);
+            showError("Cannot connect to server. Please try again later.");
         } finally {
             btn.classList.remove("loading");
             btn.disabled = false;
@@ -440,4 +443,4 @@ const API_BASE_URL = 'https://smart-small-businessmanagement-backend-2.onrender.
 </script>
 
 </body>
-</html> 
+</html>
