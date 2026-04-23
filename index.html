@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <!-- Load API base URL from config.js (single source of truth) -->
     <script src="config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -176,6 +175,7 @@
         .alert.show { display: flex; }
         .alert-error { background: rgba(255,90,90,0.1); border: 1px solid rgba(255,90,90,0.25); color: var(--error); }
         .alert-success { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: var(--success); }
+        .alert-info { background: rgba(240,165,0,0.08); border: 1px solid rgba(240,165,0,0.25); color: var(--accent); }
 
         .input-group { margin-bottom: 1.1rem; }
 
@@ -317,6 +317,9 @@
             <p style="font-size:0.875rem; color:var(--muted);">Enter your credentials to access your dashboard</p>
         </div>
 
+        <div class="alert alert-info" id="infoAlert" style="display:none;">
+            <span>🔒</span><span id="infoText"></span>
+        </div>
         <div class="alert alert-error" id="errorAlert">
             <span>⚠</span><span id="errorText"></span>
         </div>
@@ -367,8 +370,16 @@
 </div>
 
 <script>
-    // API_BASE_URL is loaded from config.js
-    // e.g. https://smart-small-businessmanagement-backend-2.onrender.com/api
+    // ─── Show session-expired message if redirected here due to inactivity ───
+    window.addEventListener("DOMContentLoaded", () => {
+        const reason = sessionStorage.getItem("logoutReason");
+        if (reason === "inactivity") {
+            const infoAlert = document.getElementById("infoAlert");
+            document.getElementById("infoText").textContent = "You were logged out due to inactivity. Please sign in again.";
+            infoAlert.style.display = "flex";
+            sessionStorage.removeItem("logoutReason");
+        }
+    });
 
     function showError(msg) {
         document.getElementById("errorText").textContent = msg;
@@ -393,6 +404,7 @@
 
         document.getElementById("errorAlert").classList.remove("show");
         document.getElementById("successAlert").classList.remove("show");
+        document.getElementById("infoAlert").style.display = "none";
 
         if (!identifier || !password) {
             showError("Please fill in all fields.");
@@ -404,7 +416,6 @@
         btn.disabled = true;
 
         try {
-            // FIX: use API_BASE_URL from config.js, removed extra /api prefix
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -414,15 +425,23 @@
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem("token",    data.token);
-                localStorage.setItem("role",     data.role);
-                localStorage.setItem("username", data.username);
-                localStorage.setItem("fullName", data.fullName);
+                // ─── Store all session data ───
+                localStorage.setItem("token",        data.token);
+                localStorage.setItem("refreshToken", data.refreshToken);
+                localStorage.setItem("role",         data.role);
+                localStorage.setItem("username",     data.username);
+                localStorage.setItem("fullName",     data.fullName);
+
+                // ─── Restore last page if coming back from inactivity logout ───
+                const lastPage = sessionStorage.getItem("lastPage");
+                sessionStorage.removeItem("lastPage");
 
                 showSuccess("Login successful!");
 
                 setTimeout(() => {
-                    if (data.role === "ADMIN") {
+                    if (lastPage) {
+                        window.location.href = lastPage;
+                    } else if (data.role === "ADMIN") {
                         window.location.href = "dashboard-admin.html";
                     } else {
                         window.location.href = "dashboard-cashier.html";
