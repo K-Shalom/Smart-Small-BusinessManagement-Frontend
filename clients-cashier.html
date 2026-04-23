@@ -161,6 +161,7 @@
         }
     </style>
     <script src="config.js"></script>
+    <script src="session.js"></script>
 </head>
 <body>
 
@@ -364,7 +365,7 @@
     document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
     document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
 
     let allClients   = [];
     let selectedClientId = null;
@@ -549,7 +550,7 @@
         setTimeout(() => t.classList.remove("show"), 3500);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     document.querySelectorAll(".modal-overlay").forEach(o => {
         o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });

@@ -6,6 +6,7 @@
     <title>New Sale — SmartBiz Cashier</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -430,7 +431,7 @@
     document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
     document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
 
     let allClients  = [];
     let allProducts = [];
@@ -751,7 +752,7 @@
         setTimeout(() => t.classList.remove("show"), 4000);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     init();
 </script>

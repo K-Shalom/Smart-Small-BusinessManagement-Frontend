@@ -6,6 +6,7 @@
     <title>Sales — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -519,7 +520,7 @@
         document.getElementById("reportsLink").style.display = "none";
     }
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
 
     let allSales    = [];
     let allClients  = [];
@@ -905,7 +906,7 @@
         setTimeout(() => t.classList.remove("show"), 3500);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     document.querySelectorAll(".modal-overlay").forEach(o => {
         o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });

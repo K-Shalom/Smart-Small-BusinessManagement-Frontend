@@ -6,6 +6,7 @@
     <title>Expenses — SmartBiz Cashier</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -262,7 +263,7 @@
     const pad = n => String(n).padStart(2,"0");
     document.getElementById("fDate").value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
     let allExpenses = [];
 
     async function loadExpenses() {
@@ -354,7 +355,7 @@
         setTimeout(() => t.classList.remove("show"), 3500);
     }
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     document.querySelectorAll(".modal-overlay").forEach(o => {
         o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });

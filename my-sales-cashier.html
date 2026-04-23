@@ -6,6 +6,7 @@
     <title>My Sales — SmartBiz Cashier</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
@@ -288,7 +289,7 @@
     document.getElementById("currentDate").textContent = now.toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
     document.getElementById("avatarInitial").textContent = fullName.charAt(0).toUpperCase();
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
     let allSales = [];
 
     async function loadSales() {
@@ -391,7 +392,7 @@
     }
 
     function closeModal(id) { document.getElementById(id).classList.remove("show"); }
-    function logout()       { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     document.querySelectorAll(".modal-overlay").forEach(o => {
         o.addEventListener("click", e => { if (e.target === o) o.classList.remove("show"); });

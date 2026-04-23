@@ -6,6 +6,7 @@
     <title>Cashier Dashboard — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
@@ -411,7 +412,7 @@
     const timeGreet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     document.getElementById("welcomeMsg").textContent = `${timeGreet}, ${fullName}! 👋`;
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+    const headers = authHeaders();
 
     function fmt(n) { return "RWF " + Number(n ?? 0).toLocaleString(); }
 
@@ -526,7 +527,7 @@
         });
     }
 
-    function logout() { localStorage.clear(); window.location.href = "index.html"; }
+    // logout() is now handled by session.js
 
     loadStats();
 </script>

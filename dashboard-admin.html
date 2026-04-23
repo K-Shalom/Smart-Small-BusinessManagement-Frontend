@@ -6,6 +6,7 @@
     <title>Admin Dashboard — SmartBiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="config.js"></script>
+    <script src="session.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <link rel="stylesheet" href="responsive.css">
     <style>
@@ -626,10 +627,7 @@
     });
 
     // ── Auth headers ──
-    const headers = {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-    };
+    const headers = authHeaders();
 
     // ── Format currency ──
     function formatRWF(amount) {
@@ -790,10 +788,10 @@
     }
 
     // ── Logout ──
-    function logout() {
-        localStorage.clear();
-        window.location.href = "index.html";
-    }
+    // logout() is now handled by session.js
+    // We can remove the local logout function if we want, but keeping it 
+    // to call session.js logout is also fine. Actually, session.js 
+    // defines logout() globally, so we can just remove this.
 
     // ── Init ──
     loadStats();
